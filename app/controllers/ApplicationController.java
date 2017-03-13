@@ -1,5 +1,8 @@
 package controllers;
 
+import com.fasterxml.jackson.databind.RuntimeJsonMappingException;
+import models.DagrComponent;
+import models.factories.DagrComponentFactory;
 import models.factories.DagrFactory;
 import com.fasterxml.jackson.databind.JsonNode;
 import data_sources.DatabaseAccessor;
@@ -21,6 +24,7 @@ public class ApplicationController extends Controller {
 
     @Inject private static final DatabaseAccessor DATABASE_ACCESSOR = new DatabaseAccessor();
     private static final DagrFactory DAGR_FACTORY = new DagrFactory();
+    private static final DagrComponentFactory DAGR_COMPONENT_FACTORY = new DagrComponentFactory();
     private Result HOMEPAGE = ok("homepage");
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 
@@ -84,7 +88,6 @@ public class ApplicationController extends Controller {
         Result response;
 
         Optional<Dagr> dagrOptional = DATABASE_ACCESSOR.findDagrByUuid(dagrUuid);
-
         if(dagrOptional.isPresent()) {
             response = ok(Json.toJson(dagrOptional.get()));
         } else {
@@ -101,14 +104,55 @@ public class ApplicationController extends Controller {
     /**
      * Adding a DAGR component.
      * */
+    @Transactional
+    @BodyParser.Of(BodyParser.class)
+    public Result addDagrComponent() {
+        Result response = null;
+        JsonNode requestBody = request().body().asJson();
+
+        if(requestBody == null) {
+            Logger.warn("Invalid request: " + requestBody);
+            response = badRequest("Invalid request: " + requestBody);
+        } else {
+            String uuidText = requestBody.findPath("parentDagrUuid").asText();
+
+            try{
+                UUID parentDagrUuid = UUID.fromString(uuidText);
+                Optional<Dagr> parentDagrOptional = DATABASE_ACCESSOR.findDagrByUuid(parentDagrUuid);
+
+                if(parentDagrOptional.isPresent()) {
+                    Dagr parentDagr = parentDagrOptional.get();
+                    DagrComponent dagrComponentToAdd = DAGR_COMPONENT_FACTORY.buildDagrComponent(requestBody, parentDagr);
+                    DATABASE_ACCESSOR.addDagrComponent(dagrComponentToAdd);
+                    response = ok(Json.toJson(dagrComponentToAdd));
+                } else {
+                    response = badRequest("Invalid request. Parent DAGR does not exist: " + parentDagrUuid);
+                }
+            } catch(IllegalArgumentException e) {
+                response = badRequest("Invalid request. Invalid parent DAGR UUID: " + uuidText);
+            }
+
+        }
+
+        return response;
+    }
 
     /**
      * Deleting a DAGR component.
      * */
+    @Transactional
+    public Result deleteDagrComponent(UUID componentUuid) {
+        throw new RuntimeException();
+    }
+
 
     /**
      * Find component by UUID.
      * */
+    @Transactional
+    public Result findComponentByUuid(UUID componentUuid){
+        throw new RuntimeException();
+    }
 
     /**************************************************************************
      * Annotation methods
@@ -118,21 +162,30 @@ public class ApplicationController extends Controller {
     /**
      * Adding an annotation to a DAGR.
      * */
+    @Transactional
+    @BodyParser.Of(BodyParser.class)
+    public Result addAnnotationToDagr() {
+        throw new RuntimeException();
+    }
 
     /**
-     * Deleting an annotation from a DAGR.
+     * Deleting an annotation from a DAGR or DAGR component.
      * */
+    @Transactional
+    @BodyParser.Of(BodyParser.class)
+    public Result deleteAnnotation() {
+        throw new RuntimeException();
+    }
 
     /**
-     * Adding an annotation to a component.
+     * Batch add annotations to components.
+     *
+     *
      * */
-
-    /**
-     * Batch add annotations
-     * */
-
-    /**
-     * Deleting an annotation from a component.
-     * */
+    @Transactional
+    @BodyParser.Of(BodyParser.class)
+    public Result batchAddAnnotations() {
+        throw new RuntimeException();
+    }
 
 }

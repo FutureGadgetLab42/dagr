@@ -1,8 +1,10 @@
 package models.factories;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import exceptions.DagrComponentCreationException;
 import exceptions.DagrCreationException;
 import models.Dagr;
+import models.DagrComponent;
 import play.Logger;
 
 import java.util.Date;
@@ -19,10 +21,10 @@ public class DagrFactory {
 
     public Dagr buildDagr(JsonNode requestJson) throws DagrCreationException {
         String documentName = requestJson.findPath("documentName").asText(),
-        resourceLocation = requestJson.findPath("resourceLocation").asText();
+                resourceLocation = requestJson.findPath("resourceLocation").asText();
 
         Date documentCreationTime = new Date(requestJson.findPath("creationTime").asLong()),
-        documentLastModifiedTime = new Date(requestJson.findPath("lastModified").asLong());
+                documentLastModifiedTime = new Date(requestJson.findPath("lastModified").asLong());
 
         if(documentName == null || resourceLocation == null
                 || documentCreationTime == null || documentLastModifiedTime == null) {
@@ -36,12 +38,12 @@ public class DagrFactory {
     private Dagr buildDagr(String documentName, String resourceLocation, Date documentCreationTime, Date documentLastModifiedTime) {
         DagrBuilder dagrBuilder = new DagrBuilder();
         dagrBuilder.setDagrCreationDate(new Date());
-        dagrBuilder.setDocumentCreationDate(documentCreationTime);
         dagrBuilder.setDagrUuid(UUID.randomUUID());
-        dagrBuilder.setResourceLocation(resourceLocation);
-        dagrBuilder.setDocumentName(documentName);
-        dagrBuilder.setDocumentLastModifiedTime(documentLastModifiedTime);
         return dagrBuilder.build();
     }
+
+
+
+
 
 }

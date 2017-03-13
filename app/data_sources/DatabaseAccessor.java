@@ -1,6 +1,7 @@
 package data_sources;
 
 import models.Dagr;
+import models.DagrComponent;
 import play.Logger;
 import play.db.ebean.Transactional;
 
@@ -88,7 +89,7 @@ public class DatabaseAccessor {
         Optional<List<Dagr>> result;
 
         List<Dagr> dagrList = Dagr.FIND.where()
-                .between("creationDate", date, date)
+                .between("dagrComponentCreationDate", date, date)
                 .findList();
 
         if(dagrList == null) {
@@ -149,6 +150,18 @@ public class DatabaseAccessor {
             return false;
         }
     }
+
+    /**
+     * Adds the given DagrComponent to the Dagr with given UUID
+     *
+     * @param dagrComponent
+     *          The DagrComponent to be added.
+     * */
+    @Transactional
+    public void addDagrComponent(DagrComponent dagrComponent) {
+
+    }
+
 
     /**
      * Inserts the given DAGR to the database

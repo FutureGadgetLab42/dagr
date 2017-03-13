@@ -5,4 +5,21 @@
 # A simple homepage
 GET     /                                   controllers.ApplicationController.index
 
+POST    /createDagr                         controllers.ApplicationController.insertNewDocumentAsNewDagr
+
 GET     /deleteDagr/:uuid                   controllers.ApplicationController.deleteDagr(uuid: java.util.UUID)
+
+GET     /findDagrByUuid/:uuid               controllers.ApplicationController.findDagrByUuid(uuid: java.util.UUID)
+
+POST    /addComponent                       controllers.ApplicationController.addDagrComponent
+
+GET     /deleteComponent/:uuid              controllers.ApplicationController.deleteDagrComponent(uuid: java.util.UUID)
+
+GET     /findComponentByUuid/:uuid          controllers.ApplicationController.findComponentByUuid(uuid: java.util.UUID)
+
+POST    /addAnnotation                      controllers.ApplicationController.addAnnotationToDagr
+
+POST    /deleteAnnotation                   controllers.ApplicationController.deleteAnnotation
+
+POST    /batchAddAnnotations                controllers.ApplicationController.batchAddAnnotations
+
