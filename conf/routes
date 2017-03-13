@@ -1,0 +1,8 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+# A simple homepage
+GET     /                                   controllers.ApplicationController.index
+
+GET     /deleteDagr/:uuid                   controllers.ApplicationController.deleteDagr(uuid: java.util.UUID)
