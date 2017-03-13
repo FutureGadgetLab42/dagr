@@ -1,7 +1,6 @@
 package models.factories;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import exceptions.BeaconCreationExcecption;
 import exceptions.DagrCreationException;
 import models.Dagr;
 import play.Logger;
@@ -28,7 +27,7 @@ public class DagrFactory {
         if(documentName == null || resourceLocation == null
                 || documentCreationTime == null || documentLastModifiedTime == null) {
             Logger.warn("Bad request: " + requestJson);
-            throw new BeaconCreationExcecption("Bad request: " + requestJson);
+            throw new DagrCreationException("Bad request: " + requestJson);
         } else {
             return buildDagr(documentName, resourceLocation, documentCreationTime, documentLastModifiedTime);
         }

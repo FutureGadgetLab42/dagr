@@ -67,7 +67,7 @@ public class DatabaseAccessor {
         Optional<Dagr> result;
         try {
             Dagr dagr = Dagr.FIND.where()
-                    .like("beaconKey", "%" + dagrUuid.toString() + "%")
+                    .like("dagrUuid", "%" + dagrUuid.toString() + "%")
                     .findUnique();
             if(dagr == null) result = Optional.empty(); else result = Optional.of(dagr);
         } catch(NonUniqueResultException nonUniqueResultException) {
@@ -159,7 +159,7 @@ public class DatabaseAccessor {
     @Transactional
     public void saveDagr(Dagr dagr) {
         dagr.save();
-        Logger.info("Successfully saved Beacon with id: " + dagr.id);
+        Logger.info("Successfully saved DAGR with UUID: " + dagr.dagrUuid);
     }
 
     @Transactional

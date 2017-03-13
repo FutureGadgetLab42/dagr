@@ -3,12 +3,7 @@ package controllers;
 import models.factories.DagrFactory;
 import com.fasterxml.jackson.databind.JsonNode;
 import data_sources.DatabaseAccessor;
-import exceptions.BeaconCreationExcecption;
-import exceptions.BeaconSearchException;
-import exceptions.ConfigurationException;
 import exceptions.DagrCreationException;
-import models.Beacon;
-import models.BeaconRendezvous;
 import models.Dagr;
 import play.Logger;
 import play.db.ebean.Transactional;
@@ -18,11 +13,7 @@ import play.mvc.Controller;
 import play.mvc.Result;
 
 import javax.inject.Inject;
-import java.io.File;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -88,6 +79,20 @@ public class ApplicationController extends Controller {
     /**
      * Find DAGR by UUID.
      * */
+    @Transactional
+    public Result findDagrByUuid(UUID dagrUuid) {
+        Result response;
+
+        Optional<Dagr> dagrOptional = DATABASE_ACCESSOR.findDagrByUuid(dagrUuid);
+
+        if(dagrOptional.isPresent()) {
+            response = ok(Json.toJson(dagrOptional.get()));
+        } else {
+            response = ok("DAGR not present: " + dagrUuid);
+        }
+
+        return response;
+    }
 
     /**************************************************************************
      * DAGR component methods
