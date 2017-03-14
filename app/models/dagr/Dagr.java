@@ -1,6 +1,6 @@
-package models;
+package models.dagr;
 
-import models.factories.DagrBuilder;
+import models.dagr.factories.DagrBuilder;
 import com.avaje.ebean.Model;
 import com.avaje.ebean.annotation.CreatedTimestamp;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -28,8 +28,7 @@ public class Dagr extends Model {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss z", timezone="GMT")
     public Date creationDate;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = Constants.PARENT_DAGR)
-    @JoinColumn
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = Constants.PARENT_DAGR)
     public List<DagrComponent> dagrComponentList;
 
     public static final Find<Long, Dagr> FIND = new Find<Long, Dagr>(){};

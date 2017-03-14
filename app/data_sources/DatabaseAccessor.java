@@ -1,7 +1,8 @@
 package data_sources;
 
-import models.Dagr;
-import models.DagrComponent;
+import models.annotation.Annotation;
+import models.dagr.Dagr;
+import models.dagr.DagrComponent;
 import play.Logger;
 import play.db.ebean.Transactional;
 
@@ -104,13 +105,13 @@ public class DatabaseAccessor {
     }
 
     /**
-     * Finds all DAGRs that contain the given annotation.
+     * Finds all DAGRs that contain the given annotationText.
      *
      * @param annotation
-     *          The desired annotation to search for.
+     *          The desired annotationText to search for.
      *
      * @return result
-     *          An Optional containing the List of all DAGRs matching the given annotation.
+     *          An Optional containing the List of all DAGRs matching the given annotationText.
      * */
     @Transactional
     public Optional<List<Dagr>> findDagrsByAnnotation(String annotation) {
@@ -151,15 +152,46 @@ public class DatabaseAccessor {
         }
     }
 
+    @Transactional
+    public Optional<DagrComponent> findComponentByUuid(UUID componentUuid) {
+        Optional<DagrComponent> result;
+
+        DagrComponent dagrComponent = DagrComponent.FIND
+                .where()
+                .like("dagrComponentUuid", "%" + componentUuid + "%")
+                .findUnique();
+
+        if(dagrComponent == null) {
+            result = Optional.empty();
+        } else {
+            result = Optional.of(dagrComponent);
+        }
+        return result;
+    }
+
+    @Transactional
+    public boolean deleteDagrComponentByUuid(UUID componenetUuid) {
+        boolean result;
+        Optional<DagrComponent> dagrComponentOptional =findComponentByUuid(componenetUuid);
+
+        if(dagrComponentOptional.isPresent()) {
+            result = dagrComponentOptional.get().delete();
+        } else {
+            result = false;
+        }
+        return result;
+    }
+
     /**
-     * Adds the given DagrComponent to the Dagr with given UUID
+     * Adds the given DagrComponent to the database
      *
      * @param dagrComponent
      *          The DagrComponent to be added.
      * */
     @Transactional
-    public void addDagrComponent(DagrComponent dagrComponent) {
-
+    public void saveComponent(DagrComponent dagrComponent) {
+        dagrComponent.save();
+        Logger.info("Successfully saved DAGR component with UUID: " + dagrComponent.dagrComponentUuid);
     }
 
 
@@ -173,6 +205,12 @@ public class DatabaseAccessor {
     public void saveDagr(Dagr dagr) {
         dagr.save();
         Logger.info("Successfully saved DAGR with UUID: " + dagr.dagrUuid);
+    }
+
+    @Transactional
+    public void saveAnnotation(Annotation annotation) {
+        annotation.save();
+        Logger.info("Successfully saved annotation: " + annotation.annotationText);
     }
 
     @Transactional

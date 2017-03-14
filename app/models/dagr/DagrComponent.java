@@ -1,9 +1,10 @@
-package models;
+package models.dagr;
 
 import com.avaje.ebean.Model;
 import com.avaje.ebean.annotation.CreatedTimestamp;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import models.factories.DagrComponentBuilder;
+import models.annotation.Annotation;
+import models.dagr.factories.DagrComponentBuilder;
 import play.data.format.Formats;
 import play.data.validation.Constraints.Required;
 import utilities.Constants;
@@ -54,44 +55,8 @@ public class DagrComponent extends Model {
         this.parentDagr = builder.getParentDagr();
     }
 
-//    private static class DagrComponentBuilder {
-//
-//        private Date dagrComponentCreationDate, lastModified;
-//        private UUID dagrComponentUuid;
-//        private Dagr parentDagr;
-//        private String resourceLocation;
-//
-//        private DagrComponentBuilder(Dagr parentDagr, String resourceLocation) {
-//            this.dagrComponentCreationDate = new Date();
-//            this.lastModified = new Date();
-//            this.dagrComponentUuid = UUID.randomUUID();
-//            this.parentDagr = parentDagr;
-//            this.resourceLocation = resourceLocation;
-//        }
-//
-//        private DagrComponent build() {
-//            return new DagrComponent(this);
-//        }
-//
-//        public Date getCreationDate() {
-//            return dagrComponentCreationDate;
-//        }
-//
-//        public Date getLastModified() {
-//            return lastModified;
-//        }
-//
-//        public UUID getDagrComponentUuid() {
-//            return dagrComponentUuid;
-//        }
-//
-//        public Dagr getParentDagr() {
-//            return parentDagr;
-//        }
-//
-//        public String getResourceLocation() {
-//            return resourceLocation;
-//        }
-//    }
+    public void addAnnotation(Annotation annotation) {
+        this.annotations.add(annotation);
+    }
 }
 

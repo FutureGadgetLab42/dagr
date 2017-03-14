@@ -1,13 +1,14 @@
 package controllers;
 
-import com.fasterxml.jackson.databind.RuntimeJsonMappingException;
-import models.DagrComponent;
-import models.factories.DagrComponentFactory;
-import models.factories.DagrFactory;
+import models.annotation.Annotation;
+import models.annotation.factories.AnnotationFactory;
+import models.dagr.DagrComponent;
+import models.dagr.factories.DagrComponentFactory;
+import models.dagr.factories.DagrFactory;
 import com.fasterxml.jackson.databind.JsonNode;
 import data_sources.DatabaseAccessor;
 import exceptions.DagrCreationException;
-import models.Dagr;
+import models.dagr.Dagr;
 import play.Logger;
 import play.db.ebean.Transactional;
 import play.libs.Json;
@@ -25,6 +26,7 @@ public class ApplicationController extends Controller {
     @Inject private static final DatabaseAccessor DATABASE_ACCESSOR = new DatabaseAccessor();
     private static final DagrFactory DAGR_FACTORY = new DagrFactory();
     private static final DagrComponentFactory DAGR_COMPONENT_FACTORY = new DagrComponentFactory();
+    private static final AnnotationFactory ANNOTATION_FACTORY = new AnnotationFactory();
     private Result HOMEPAGE = ok("homepage");
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 
@@ -62,7 +64,6 @@ public class ApplicationController extends Controller {
 
         return response;
     }
-
 
     /**
      * Deleting a DAGR.
@@ -106,7 +107,7 @@ public class ApplicationController extends Controller {
      * */
     @Transactional
     @BodyParser.Of(BodyParser.class)
-    public Result addDagrComponent() {
+    public Result insertNewDocumentAsComponent() {
         Result response = null;
         JsonNode requestBody = request().body().asJson();
 
@@ -123,7 +124,7 @@ public class ApplicationController extends Controller {
                 if(parentDagrOptional.isPresent()) {
                     Dagr parentDagr = parentDagrOptional.get();
                     DagrComponent dagrComponentToAdd = DAGR_COMPONENT_FACTORY.buildDagrComponent(requestBody, parentDagr);
-                    DATABASE_ACCESSOR.addDagrComponent(dagrComponentToAdd);
+                    DATABASE_ACCESSOR.saveComponent(dagrComponentToAdd);
                     response = ok(Json.toJson(dagrComponentToAdd));
                 } else {
                     response = badRequest("Invalid request. Parent DAGR does not exist: " + parentDagrUuid);
@@ -142,7 +143,18 @@ public class ApplicationController extends Controller {
      * */
     @Transactional
     public Result deleteDagrComponent(UUID componentUuid) {
-        throw new RuntimeException();
+        Result response;
+
+        Optional<DagrComponent> componentToDeleteOptional = DATABASE_ACCESSOR.findComponentByUuid(componentUuid);
+        if(componentToDeleteOptional.isPresent()) {
+            componentToDeleteOptional.get().delete();
+            Logger.info("Successfully deleted component with UUID: " + componentUuid);
+            response = ok("Successfully deleted component with UUID: " + componentUuid);
+        } else {
+            Logger.info("Component does not exist: " + componentUuid);
+            response = ok("Component does not exist: " + componentUuid);
+        }
+        return response;
     }
 
 
@@ -151,7 +163,16 @@ public class ApplicationController extends Controller {
      * */
     @Transactional
     public Result findComponentByUuid(UUID componentUuid){
-        throw new RuntimeException();
+        Result response;
+
+        Optional<DagrComponent> dagrComponentOptional = DATABASE_ACCESSOR.findComponentByUuid(componentUuid);
+        if(dagrComponentOptional.isPresent()) {
+            response = ok(Json.toJson(dagrComponentOptional.get()));
+        } else {
+            response = ok("DAGR component not present: " + componentUuid);
+        }
+
+        return response;
     }
 
     /**************************************************************************
@@ -160,20 +181,46 @@ public class ApplicationController extends Controller {
 
 
     /**
-     * Adding an annotation to a DAGR.
+     * Adding an annotation to the database.
      * */
     @Transactional
     @BodyParser.Of(BodyParser.class)
     public Result addAnnotationToDagr() {
-        throw new RuntimeException();
+        Result response = null;
+        JsonNode requestBody = request().body().asJson();
+        String uuidText = requestBody.findPath("componentUuid").asText();
+        if(uuidText == null) {
+            Logger.warn("Attempted to add annotation to invalid UUID: " + uuidText);
+            response = badRequest("Invalid UUID: " + uuidText);
+        } else {
+            try {
+                UUID uuid = UUID.fromString(uuidText);
+                Optional<DagrComponent> dagrComponentOptional = DATABASE_ACCESSOR.findComponentByUuid(uuid);
+                if(dagrComponentOptional.isPresent()) {
+                    DagrComponent dagrComponent = dagrComponentOptional.get();
+                    Annotation annotation = ANNOTATION_FACTORY.buildAnnotation(requestBody, dagrComponent);
+                    DATABASE_ACCESSOR.saveAnnotation(annotation);
+                    DATABASE_ACCESSOR.saveComponent(dagrComponent);
+                    response = ok(Json.toJson(annotation));
+                } else {
+                    Logger.info("Failed to find component with UUID: " + uuid);
+                    response = ok("Component not found: " + uuid);
+                }
+            } catch(IllegalArgumentException e) {
+                Logger.warn("Attempted to parse invalid UUID: " + uuidText);
+                response = badRequest("Invalid UUID provided: " + uuidText);
+            }
+        }
+        return response;
     }
 
     /**
-     * Deleting an annotation from a DAGR or DAGR component.
+     * Deleting an annotation from a DAGR component.
      * */
     @Transactional
     @BodyParser.Of(BodyParser.class)
     public Result deleteAnnotation() {
+
         throw new RuntimeException();
     }
 

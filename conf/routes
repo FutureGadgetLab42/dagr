@@ -7,11 +7,11 @@ GET     /                                   controllers.ApplicationController.in
 
 POST    /createDagr                         controllers.ApplicationController.insertNewDocumentAsNewDagr
 
+POST    /addComponent                       insertNewDocumentAsComponent
+
 GET     /deleteDagr/:uuid                   controllers.ApplicationController.deleteDagr(uuid: java.util.UUID)
 
 GET     /findDagrByUuid/:uuid               controllers.ApplicationController.findDagrByUuid(uuid: java.util.UUID)
-
-POST    /addComponent                       controllers.ApplicationController.addDagrComponent
 
 GET     /deleteComponent/:uuid              controllers.ApplicationController.deleteDagrComponent(uuid: java.util.UUID)
 

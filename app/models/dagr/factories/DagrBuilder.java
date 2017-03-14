@@ -1,6 +1,6 @@
-package models.factories;
+package models.dagr.factories;
 
-import models.Dagr;
+import models.dagr.Dagr;
 
 import java.util.Date;
 import java.util.UUID;
