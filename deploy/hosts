@@ -1,5 +1,2 @@
-[aws-instance]
-vertigo.cs.umd.edu
-
-[gold-servers]
-valet.cs.umd.edu
+[dagr-prod]
+34.209.223.38

@@ -10,6 +10,6 @@ start_script_path: "~/dagr-1.0/bin/dagr"
 
 
 vault_application_secret: "2LX7;M1u[tK9V4SaCX[rC>ieJxh<qZQL/;uR[mw;0Q4<5@VSVoVUxQfE7eH:z>:;"
-vault_database_url: jdbc:mysql://localhost/beacons
+vault_database_url: jdbc:mysql://dagr-prod.cdpxtgultkkr.us-west-2.rds.amazonaws.com
 vault_database_username: tom
-vault_database_password: 79gmzjcm
+vault_database_password: e!genValue1

@@ -1,0 +1,16 @@
+---
+
+- hosts: dagr-prod
+  become: no
+  gather_facts: False
+  remote_user: ubuntu
+  roles:
+    - { role: project-deployment, tags: ['dagr-prod']}
+  tasks:
+  - name: install python 2
+    raw: sudo bash -c "test -e /usr/bin/python || (apt -qqy update && apt install -qy python-minimal)"
+  environment:
+        APPLICATION_SECRET: "{{ vault_application_secret }}"
+        DATABASE_URL: "{{ vault_database_url }}"
+        DATABASE_USER: "{{ vault_database_username }}"
+        DATABASE_PASS: "{{ vault_database_password }}"

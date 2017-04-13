@@ -1,1 +1,4 @@
 Welcome to the DAGR Project.
+
+Deploy with
+ansible-playbook deploy/project-deployment.yml -i deploy/hosts -c paramiko

@@ -13,6 +13,7 @@
     - unarchive-executable
 
 - name: Run start script
-  shell: cd ~/beacon-backend-1.0/bin && ./beacon-backend -Dplay.evolutions.db.default.autoApply=true -Dplay.evolutions.db.default.autoApplyDowns=true &
+  shell: cd ~/dagr-1.0/bin && nohup ./dagr -Dplay.evolutions.db.default.autoApply=true -Dplay.evolutions.db.default.autoApplyDowns=true &
   tags:
     - start-application
+
