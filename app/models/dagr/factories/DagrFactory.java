@@ -17,7 +17,7 @@ import java.util.UUID;
  * */
 public class DagrFactory {
 
-    public Dagr buildDagr(JsonNode requestJson) throws DagrCreationException {
+    public Dagr     buildDagr(JsonNode requestJson) throws DagrCreationException {
         String documentName = requestJson.findPath("documentName").asText(),
                 resourceLocation = requestJson.findPath("resourceLocation").asText();
 

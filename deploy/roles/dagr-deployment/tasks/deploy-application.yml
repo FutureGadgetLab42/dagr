@@ -1,0 +1,18 @@
+---
+
+- include_vars: main.yml
+
+- name: Build executable
+  local_action: command /usr/local/bin/activator clean dist
+  tags:
+    - build-executable
+
+- name: Unarchive project
+  unarchive: src="{{ zip_path }}" dest="{{ destination_zip_path }}"
+  tags:
+    - unarchive-executable
+
+- name: Run start script
+  shell: cd ~/beacon-backend-1.0/bin && ./beacon-backend -Dplay.evolutions.db.default.autoApply=true -Dplay.evolutions.db.default.autoApplyDowns=true &
+  tags:
+    - start-application

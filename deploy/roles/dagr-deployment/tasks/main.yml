@@ -1,0 +1,4 @@
+---
+
+- name: Run application
+  include: deploy-application.yml

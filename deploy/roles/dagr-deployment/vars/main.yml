@@ -1,0 +1,15 @@
+---
+
+java_apt_repo: "ppa:webupd8team/java"
+java_installer_name: "oracle-java8-installer"
+
+repo_path: "/Users/Tom/code/class_projects/dagr"
+zip_path: "/Users/Tom/code/class_projects/dagr/target/universal/dagr-1.0.zip"
+destination_zip_path: "~"
+start_script_path: "~/dagr-1.0/bin/dagr"
+
+
+vault_application_secret: "2LX7;M1u[tK9V4SaCX[rC>ieJxh<qZQL/;uR[mw;0Q4<5@VSVoVUxQfE7eH:z>:;"
+vault_database_url: jdbc:mysql://localhost/beacons
+vault_database_username: tom
+vault_database_password: 79gmzjcm

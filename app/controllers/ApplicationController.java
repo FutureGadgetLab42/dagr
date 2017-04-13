@@ -23,7 +23,7 @@ import java.util.UUID;
 
 public class ApplicationController extends Controller {
 
-    @Inject private static final DatabaseAccessor DATABASE_ACCESSOR = new DatabaseAccessor();
+    private static final DatabaseAccessor DATABASE_ACCESSOR = new DatabaseAccessor();
     private static final DagrFactory DAGR_FACTORY = new DagrFactory();
     private static final DagrComponentFactory DAGR_COMPONENT_FACTORY = new DagrComponentFactory();
     private static final AnnotationFactory ANNOTATION_FACTORY = new AnnotationFactory();

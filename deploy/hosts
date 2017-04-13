@@ -1,4 +1,4 @@
-[blue-servers]
+[aws-instance]
 vertigo.cs.umd.edu
 
 [gold-servers]

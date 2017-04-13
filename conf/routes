@@ -5,21 +5,21 @@
 # A simple homepage
 GET     /                                   controllers.ApplicationController.index
 
-POST    /createDagr                         controllers.ApplicationController.insertNewDocumentAsNewDagr
+POST    /api/v1/createDagr                         controllers.ApplicationController.insertNewDocumentAsNewDagr
 
-POST    /addComponent                       insertNewDocumentAsComponent
+POST    /api/v1/addComponent                       controllers.ApplicationController.insertNewDocumentAsComponent
 
-GET     /deleteDagr/:uuid                   controllers.ApplicationController.deleteDagr(uuid: java.util.UUID)
+GET     /api/v1/deleteDagr/:uuid                   controllers.ApplicationController.deleteDagr(uuid: java.util.UUID)
 
-GET     /findDagrByUuid/:uuid               controllers.ApplicationController.findDagrByUuid(uuid: java.util.UUID)
+GET     /api/v1/findDagrByUuid/:uuid               controllers.ApplicationController.findDagrByUuid(uuid: java.util.UUID)
 
-GET     /deleteComponent/:uuid              controllers.ApplicationController.deleteDagrComponent(uuid: java.util.UUID)
+GET     /api/v1/deleteComponent/:uuid              controllers.ApplicationController.deleteDagrComponent(uuid: java.util.UUID)
 
-GET     /findComponentByUuid/:uuid          controllers.ApplicationController.findComponentByUuid(uuid: java.util.UUID)
+GET     /api/v1/findComponentByUuid/:uuid          controllers.ApplicationController.findComponentByUuid(uuid: java.util.UUID)
 
-POST    /addAnnotation                      controllers.ApplicationController.addAnnotationToDagr
+POST    /api/v1/addAnnotation                      controllers.ApplicationController.addAnnotationToDagr
 
-POST    /deleteAnnotation                   controllers.ApplicationController.deleteAnnotation
+POST    /api/v1/deleteAnnotation                   controllers.ApplicationController.deleteAnnotation
 
-POST    /batchAddAnnotations                controllers.ApplicationController.batchAddAnnotations
+POST    /api/v1/batchAddAnnotations                controllers.ApplicationController.batchAddAnnotations
 
