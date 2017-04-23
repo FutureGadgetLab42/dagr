@@ -1,5 +1,8 @@
 package controllers;
 
+import controllers.requests.AddAnnotationRequest;
+import controllers.requests.CreateDagrRequest;
+import controllers.requests.RequestValidator;
 import models.annotation.Annotation;
 import models.annotation.factories.AnnotationFactory;
 import models.dagr.DagrComponent;
@@ -9,6 +12,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import data_sources.DatabaseAccessor;
 import exceptions.DagrCreationException;
 import models.dagr.Dagr;
+import models.dagr.factories.FactoryWrapper;
 import play.Logger;
 import play.db.ebean.Transactional;
 import play.libs.Json;
@@ -23,21 +27,18 @@ import java.util.UUID;
 
 public class ApplicationController extends Controller {
 
+    private static final FactoryWrapper FACTORIES = new FactoryWrapper();
     private static final DatabaseAccessor DATABASE_ACCESSOR = new DatabaseAccessor();
-    private static final DagrFactory DAGR_FACTORY = new DagrFactory();
-    private static final DagrComponentFactory DAGR_COMPONENT_FACTORY = new DagrComponentFactory();
-    private static final AnnotationFactory ANNOTATION_FACTORY = new AnnotationFactory();
-    private Result HOMEPAGE = ok("homepage");
+    private static final RequestValidator REQUEST_VALIDATOR = new RequestValidator();
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 
     public Result index() {
-        return HOMEPAGE;
+        return ok("homepage");
     }
 
     /*************************************************************************
      * DAGR methods
      **************************************************************************/
-
 
     /**
      * Inserts a new document as a new DAGR.
@@ -48,18 +49,14 @@ public class ApplicationController extends Controller {
         Result response;
         JsonNode requestBody = request().body().asJson();
 
-        if(requestBody == null) {
-            Logger.error("Invalid request received " + request().body().asText());
-            response = badRequest("Invalid request format: " + request().body());
-        } else {
-            try {
-                Dagr createdDagr = DAGR_FACTORY.buildDagr(requestBody);
-                DATABASE_ACCESSOR.saveDagr(createdDagr);
-                response = ok(Json.toJson(createdDagr));
-            } catch(DagrCreationException e) {
-                Logger.warn("Received invalid request: " + requestBody);
-                response = badRequest("Invalid request: " + requestBody);
-            }
+        try {
+            CreateDagrRequest createDagrRequest = REQUEST_VALIDATOR.validateCreateDagrRequest(requestBody);
+            Dagr createdDagr = FACTORIES.dagrFactory.buildDagr(createDagrRequest);
+            DATABASE_ACCESSOR.saveDagr(createdDagr);
+            response = ok(Json.toJson(createdDagr));
+        } catch(DagrCreationException e) {
+            Logger.warn("Received invalid request: " + requestBody);
+            response = badRequest("Invalid request: " + requestBody);
         }
 
         return response;
@@ -123,7 +120,7 @@ public class ApplicationController extends Controller {
 
                 if(parentDagrOptional.isPresent()) {
                     Dagr parentDagr = parentDagrOptional.get();
-                    DagrComponent dagrComponentToAdd = DAGR_COMPONENT_FACTORY.buildDagrComponent(requestBody, parentDagr);
+                    DagrComponent dagrComponentToAdd = FACTORIES.dagrComponentFactory.buildDagrComponent(requestBody, parentDagr);
                     DATABASE_ACCESSOR.saveComponent(dagrComponentToAdd);
                     response = ok(Json.toJson(dagrComponentToAdd));
                 } else {
@@ -198,7 +195,7 @@ public class ApplicationController extends Controller {
                 Optional<DagrComponent> dagrComponentOptional = DATABASE_ACCESSOR.findComponentByUuid(uuid);
                 if(dagrComponentOptional.isPresent()) {
                     DagrComponent dagrComponent = dagrComponentOptional.get();
-                    Annotation annotation = ANNOTATION_FACTORY.buildAnnotation(requestBody, dagrComponent);
+                    Annotation annotation = FACTORIES.annotationFactory.buildAnnotation(requestBody, dagrComponent);
                     DATABASE_ACCESSOR.saveAnnotation(annotation);
                     DATABASE_ACCESSOR.saveComponent(dagrComponent);
                     response = ok(Json.toJson(annotation));

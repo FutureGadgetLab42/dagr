@@ -26,7 +26,7 @@ public class DatabaseAccessor {
             result = Optional.empty();
             Logger.info("Attempted to list all DAGRs while database is empty.");
         } else {
-            dagrList.sort((a, b) -> a.creationDate.compareTo(b.creationDate));
+            dagrList.sort((a, b) -> a.dagrCreationDate.compareTo(b.dagrCreationDate));
             result = Optional.of(dagrList);
         }
 
@@ -97,7 +97,7 @@ public class DatabaseAccessor {
             Logger.info("Could not find DAGRs on date: " + date);
             result = Optional.empty();
         } else {
-            dagrList.sort((a, b) -> a.creationDate.compareTo(b.creationDate));
+            dagrList.sort((a, b) -> a.dagrCreationDate.compareTo(b.dagrCreationDate));
             result = Optional.of(dagrList);
         }
 

@@ -1,7 +1,19 @@
+import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.Before;
 import org.junit.Test;
+import play.test.Helpers;
+import play.libs.Json;
+import play.mvc.Http.RequestBuilder;
+import play.mvc.Result;
+import play.test.WithApplication;
 
-public class IntegrationTest {
+public class IntegrationTest extends WithApplication {
+
+    public static <T> RequestBuilder fakeRequestWithJson(T input, String method, String url) {
+        JsonNode jsonNode = Json.toJson(input);
+        RequestBuilder fakeRequest = Helpers.fakeRequest(method, url).bodyJson(jsonNode);
+        return fakeRequest;
+    }
 
     @Before
     public void setup() {
@@ -10,7 +22,9 @@ public class IntegrationTest {
 
     @Test
     public void testCreateDagr() {
-
+        Helpers.running(Helpers.fakeApplication(), () -> {
+           RequestBuilder mockRequest = Helpers.fakeRequest().bodyJson()
+        });
     }
 
     @Test

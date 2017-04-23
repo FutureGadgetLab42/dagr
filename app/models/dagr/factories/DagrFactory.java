@@ -1,9 +1,8 @@
 package models.dagr.factories;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import controllers.requests.CreateDagrRequest;
 import exceptions.DagrCreationException;
 import models.dagr.Dagr;
-import play.Logger;
 
 import java.util.Date;
 import java.util.UUID;
@@ -17,20 +16,9 @@ import java.util.UUID;
  * */
 public class DagrFactory {
 
-    public Dagr     buildDagr(JsonNode requestJson) throws DagrCreationException {
-        String documentName = requestJson.findPath("documentName").asText(),
-                resourceLocation = requestJson.findPath("resourceLocation").asText();
-
-        Date documentCreationTime = new Date(requestJson.findPath("creationTime").asLong()),
-                documentLastModifiedTime = new Date(requestJson.findPath("lastModified").asLong());
-
-        if(documentName == null || resourceLocation == null
-                || documentCreationTime == null || documentLastModifiedTime == null) {
-            Logger.warn("Bad request: " + requestJson);
-            throw new DagrCreationException("Bad request: " + requestJson);
-        } else {
-            return buildDagr(documentName, resourceLocation, documentCreationTime, documentLastModifiedTime);
-        }
+    public Dagr buildDagr(CreateDagrRequest request) throws DagrCreationException {
+        return buildDagr(request.getDocumentName(), request.getResourceLocation(),
+                request.getDocumentCreationTime(), request.getDocumentLastModifiedTime());
     }
 
     private Dagr buildDagr(String documentName, String resourceLocation, Date documentCreationTime, Date documentLastModifiedTime) {
@@ -39,9 +27,4 @@ public class DagrFactory {
         dagrBuilder.setDagrUuid(UUID.randomUUID());
         return dagrBuilder.build();
     }
-
-
-
-
-
 }

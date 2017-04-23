@@ -28,6 +28,9 @@ public class Dagr extends Model {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss z", timezone="GMT")
     public Date creationDate;
 
+    /** DAGR may be created with a document. */
+    public UUID componentUuid;
+
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = Constants.PARENT_DAGR)
     public List<DagrComponent> dagrComponentList;
 
