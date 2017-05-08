@@ -1,0 +1,27 @@
+
+@main("Insert Page") {
+    <div id="headerwrap">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2">
+                    <h2>Please Upload New Files</h2>
+                </div>
+
+                <div class="col-lg-8 col-lg-offset-2">
+                    <div class="thumbnail equalize">
+                        <button onclick="myFunction()">Upload</button>
+                        <script>
+                                function myFunction()
+                                {
+                                    var x = document.createElement("INPUT");
+                                    x.setAttribute("type", "file", "name");
+                                    document.body.appendChild(x);
+                                }
+                                </script>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+}

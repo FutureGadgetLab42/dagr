@@ -22,9 +22,9 @@ public class IntegrationTest extends WithApplication {
 
     @Test
     public void testCreateDagr() {
-        Helpers.running(Helpers.fakeApplication(), () -> {
-           RequestBuilder mockRequest = Helpers.fakeRequest().bodyJson()
-        });
+//        Helpers.running(Helpers.fakeApplication(), () -> {
+//           RequestBuilder mockRequest = Helpers.fakeRequest().bodyJson();
+//        });
     }
 
     @Test

@@ -1,7 +1,7 @@
 package models.dagr.factories;
 
-import controllers.requests.CreateDagrRequest;
-import exceptions.DagrCreationException;
+import controllers.http_methods.requests.CreateDagrRequest;
+import utilities.exceptions.DagrCreationException;
 import models.dagr.Dagr;
 
 import java.util.Date;

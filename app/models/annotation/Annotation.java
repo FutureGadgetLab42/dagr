@@ -10,8 +10,8 @@ import play.data.validation.Constraints;
 import play.data.validation.Constraints.Required;
 
 import javax.persistence.*;
-import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 public class Annotation extends Model {
@@ -29,9 +29,8 @@ public class Annotation extends Model {
     @Constraints.MaxLength(128)
     public String annotationText;
 
-    @ManyToMany
-    @JoinColumn(name = "dagrComponentUuid")
-    public Collection<DagrComponent> annotatedDagrComponents;
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "annotations")
+    public List<DagrComponent> annotatedDagrComponents;
 
     public Annotation(AnnotationBuilder annotationBuilder) {
         this.creationDate = annotationBuilder.getCreationDate();

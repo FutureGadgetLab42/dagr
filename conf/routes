@@ -2,8 +2,14 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-# A simple homepage
-GET     /                                   controllers.ApplicationController.index
+# Web pages
+GET     /                                          controllers.ApplicationController.index
+
+GET     /insertPage                                controllers.ApplicationController.insertPage
+
+GET     /queryPage                                 controllers.ApplicationController.queryPage
+
+GET     /assets/*file                              controllers.Assets.versioned(path="/public", file: Asset)
 
 POST    /api/v1/createDagr                         controllers.ApplicationController.insertNewDocumentAsNewDagr
 

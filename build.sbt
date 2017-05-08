@@ -12,5 +12,10 @@ libraryDependencies ++= Seq(
   "mysql" % "mysql-connector-java" % "5.1.18",
   cache,
   javaWs,
-  evolutions
+  evolutions,
+  "org.webjars" %% "webjars-play" % "2.5.0",
+  "org.webjars" % "bootstrap" % "3.1.1-2"
 )
+
+
+fork in run := false

@@ -10,8 +10,8 @@ import play.data.validation.Constraints.Required;
 import utilities.Constants;
 
 import javax.persistence.*;
-import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 
@@ -42,8 +42,7 @@ public class DagrComponent extends Model {
     public String resourceLocation;
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = Constants.DAGR_COMPONENT_UUID)
-    public Collection<Annotation> annotations;
+    public List<Annotation> annotations;
 
     public static final Find<Long, DagrComponent> FIND = new Find<Long, DagrComponent>() {};
 

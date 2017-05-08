@@ -1,8 +1,8 @@
 package models.dagr.factories;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import exceptions.DagrComponentCreationException;
-import exceptions.DagrCreationException;
+import utilities.exceptions.DagrComponentCreationException;
+import utilities.exceptions.DagrCreationException;
 import models.dagr.Dagr;
 import models.dagr.DagrComponent;
 import play.Logger;

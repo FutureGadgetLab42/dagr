@@ -1,0 +1,53 @@
+@(message: String)
+
+@main("MMDA") {
+<div ng-app>
+    <body>
+
+    <!--Main content-->
+    <!--********************************************************************************-->
+    <div id="headerwrap">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2">
+                    <h1>Welcome Page</h1>
+                </div>
+                <div class="col-lg-8 col-lg-offset-2 himg">
+                    <div class="home-picture">
+                        <img src="@routes.Assets.versioned("images/home_page.jpg")" class="img-responsive" alt="Cinque Terre">
+                    </div>
+                </div>
+            </div><!-- /row -->
+        </div> <!-- /container -->
+    </div><!-- /headerwrap -->
+
+    <!--Footer-->
+    <!--********************************************************************************-->
+    <div id="footerwrap">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="centered">
+                        <h4>Course</h4>
+                        <p>CMSC424</p>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="centered">
+                        <h4>Team</h4>
+                        <p>Yigang Yao, Thomas Firoozmand</p>
+                    </div>
+                </div>
+            </div><!--row -->
+        </div><!--container-->
+    </div><!--footerwrap-->
+
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.min.js"></script>
+
+    </body>
+</div>
+}

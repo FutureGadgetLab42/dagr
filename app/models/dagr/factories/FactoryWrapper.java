@@ -1,16 +1,25 @@
 package models.dagr.factories;
 
-import controllers.requests.CreateComponentRequest;
-import controllers.requests.CreateDagrRequest;
-import exceptions.DagrCreationException;
+import controllers.http_methods.requests.CreateComponentRequest;
+import controllers.http_methods.requests.CreateDagrRequest;
+import play.data.Form;
+import play.data.FormFactory;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import utilities.exceptions.DagrCreationException;
 import models.annotation.factories.AnnotationFactory;
 import models.dagr.Dagr;
 import models.dagr.DagrComponent;
+
+import javax.inject.Inject;
 
 public class FactoryWrapper {
     public DagrFactory dagrFactory;
     public DagrComponentFactory dagrComponentFactory;
     public AnnotationFactory annotationFactory;
+
+//    @Inject public FormFactory formFactory;
+//    public Form<Dagr> dagrForm = formFactory.form(Dagr.class);
+//    public Form<DagrComponent> dagrComponentForm = formFactory.form(DagrComponent.class);
 
     public FactoryWrapper() {
         dagrFactory = new DagrFactory();
@@ -28,7 +37,7 @@ public class FactoryWrapper {
     }
 
     public DagrComponent buildDagrComponent(CreateComponentRequest createComponentRequest) {
-
+        throw new NotImplementedException();
     }
 
 }

@@ -1,16 +1,12 @@
 package controllers;
 
-import controllers.requests.AddAnnotationRequest;
-import controllers.requests.CreateDagrRequest;
-import controllers.requests.RequestValidator;
+import controllers.http_methods.requests.CreateDagrRequest;
+import controllers.http_methods.validators.RequestValidator;
 import models.annotation.Annotation;
-import models.annotation.factories.AnnotationFactory;
 import models.dagr.DagrComponent;
-import models.dagr.factories.DagrComponentFactory;
-import models.dagr.factories.DagrFactory;
 import com.fasterxml.jackson.databind.JsonNode;
-import data_sources.DatabaseAccessor;
-import exceptions.DagrCreationException;
+import utilities.data_sources.DatabaseAccessor;
+import utilities.exceptions.DagrCreationException;
 import models.dagr.Dagr;
 import models.dagr.factories.FactoryWrapper;
 import play.Logger;
@@ -30,15 +26,18 @@ public class ApplicationController extends Controller {
     private static final FactoryWrapper FACTORIES = new FactoryWrapper();
     private static final DatabaseAccessor DATABASE_ACCESSOR = new DatabaseAccessor();
     private static final RequestValidator REQUEST_VALIDATOR = new RequestValidator();
-    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 
     public Result index() {
-        return ok("homepage");
+        return ok(views.html.index.render("hi"));
     }
 
-    /*************************************************************************
-     * DAGR methods
-     **************************************************************************/
+    public Result insertPage() {
+        return ok(views.html.insert.render());
+    }
+
+    public Result queryPage() {
+        return ok(views.html.query.render());
+    }
 
     /**
      * Inserts a new document as a new DAGR.
