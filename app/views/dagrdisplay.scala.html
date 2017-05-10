@@ -1,0 +1,9 @@
+@(dagrList: List[models.dagr.Dagr])
+
+@main("DAGR Display Page") {
+    @for(dagr <- dagrList) {
+        <div>
+            DAGR UUID
+        </div>
+    }
+}

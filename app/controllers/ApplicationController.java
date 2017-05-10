@@ -24,7 +24,6 @@ import utilities.exceptions.FindDagrByDateException;
 import javax.inject.Inject;
 import java.io.File;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class ApplicationController extends Controller {
 
@@ -212,7 +211,7 @@ public class ApplicationController extends Controller {
 
     @Transactional
     public Result listAll() {
-        return ok(Json.toJson(DATABASE_ACCESSOR.listAllDagrs()));
+        return ok(views.html.dagrdisplay.render(DATABASE_ACCESSOR.listAllDagrs()));
     }
 
     /**************************************************************************************************
