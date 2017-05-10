@@ -11,7 +11,6 @@ public class DagrComponentBuilder {
     private Date documentCreationDate, documentLastModifiedTime;
     private String documentName, resourceLocation, dagrComponentName;
     private UUID dagrComponentUuid;
-
     private Dagr parentDagr;
 
     public DagrComponent build() {

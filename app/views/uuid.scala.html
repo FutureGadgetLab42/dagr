@@ -1,0 +1,12 @@
+@(uuidForm: Form[controllers.http_methods.requests.FindDagrByUuidRequest])
+
+@main("UUID"){
+    <div class="container">
+        <div class="well">
+            @helper.form(action = routes.ApplicationController.findDagrByUuid(), 'class -> "form-horizontal") {
+                @helper.inputText(uuidForm("uuid"))
+            }
+
+        </div>
+    </div>
+}

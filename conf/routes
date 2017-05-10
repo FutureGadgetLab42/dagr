@@ -2,30 +2,67 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
+
+########################################################################################################################
 # Web pages
+########################################################################################################################
+
 GET     /                                          controllers.ApplicationController.index
 
 GET     /insertPage                                controllers.ApplicationController.insertPage
 
 GET     /queryPage                                 controllers.ApplicationController.queryPage
 
+GET     /findByUuidPage                            controllers.ApplicationController.findByUuidPage
+
+GET     /findByDatePage                             controllers.ApplicationController.findByDatePage
+
+GET     /reachQueryPage                             controllers.ApplicationController.reachQueryPage
+
+GET     /sterileReportPage                             controllers.ApplicationController.sterileReportPage
+
+GET     /orphanReportPage                            controllers.ApplicationController.orphanReportPage
+
 GET     /assets/*file                              controllers.Assets.versioned(path="/public", file: Asset)
+
+
+########################################################################################################################
+# Query requests
+########################################################################################################################
+
+POST    /api/v1/findDagrByUuid                     controllers.ApplicationController.findDagrByUuid
+
+GET     /api/v1/findComponentByUuid/:uuid          controllers.ApplicationController.findComponentByUuid(uuid: java.util.UUID)
+
+POST    /api/v1/findDagrByDate                     controllers.ApplicationController.findDagrByDate
+
+GET     /api/v1/reachQuery/:uuid                   controllers.ApplicationController.reachQuery(uuid: java.util.UUID)
+
+GET     /api/v1/sterileReport                      controllers.ApplicationController.sterileReport
+
+GET     /api/v1/orphanReport                       controllers.ApplicationController.orphanReport
+
+
+########################################################################################################################
+# Creation requests
+########################################################################################################################
 
 POST    /api/v1/createDagr                         controllers.ApplicationController.insertNewDocumentAsNewDagr
 
 POST    /api/v1/addComponent                       controllers.ApplicationController.insertNewDocumentAsComponent
 
-GET     /api/v1/deleteDagr/:uuid                   controllers.ApplicationController.deleteDagr(uuid: java.util.UUID)
-
-GET     /api/v1/findDagrByUuid/:uuid               controllers.ApplicationController.findDagrByUuid(uuid: java.util.UUID)
-
-GET     /api/v1/deleteComponent/:uuid              controllers.ApplicationController.deleteDagrComponent(uuid: java.util.UUID)
-
-GET     /api/v1/findComponentByUuid/:uuid          controllers.ApplicationController.findComponentByUuid(uuid: java.util.UUID)
-
 POST    /api/v1/addAnnotation                      controllers.ApplicationController.addAnnotationToDagr
-
-POST    /api/v1/deleteAnnotation                   controllers.ApplicationController.deleteAnnotation
 
 POST    /api/v1/batchAddAnnotations                controllers.ApplicationController.batchAddAnnotations
 
+POST    /api/v1/upload                             controllers.ApplicationController.upload
+
+########################################################################################################################
+# Deletion requests
+########################################################################################################################
+
+GET     /api/v1/deleteDagr/:uuid                   controllers.ApplicationController.deleteDagr(uuid: java.util.UUID)
+
+POST    /api/v1/deleteAnnotation                   controllers.ApplicationController.deleteAnnotation
+
+GET     /api/v1/deleteComponent/:uuid              controllers.ApplicationController.deleteDagrComponent(uuid: java.util.UUID)

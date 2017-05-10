@@ -14,6 +14,7 @@ create table dagr (
   id                            bigint auto_increment not null,
   dagr_uuid                     varchar(40),
   dagr_name                     varchar(255),
+  author                        varchar(255),
   creation_date                 datetime(6) not null,
   constraint pk_dagr primary key (id)
 );

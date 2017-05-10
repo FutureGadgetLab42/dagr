@@ -33,8 +33,6 @@ public class DatabaseAccessor {
         return result;
     }
 
-
-
     /**
      * Returns an Optional DAGR containing the unique DAGR associated with the given ID
      *
@@ -79,6 +77,25 @@ public class DatabaseAccessor {
         return result;
     }
 
+    @Transactional
+    public Optional<List<Dagr>> findDagrsByDate(Date startDate, Date endDate) {
+        Optional<List<Dagr>> result;
+
+        List<Dagr> dagrList = Dagr.FIND.where()
+                .between("creationDate", startDate, endDate)
+                .findList();
+
+        if(dagrList == null) {
+            Logger.info("Could not find DAGRs between " + startDate + " and " + endDate);
+            result = Optional.empty();
+        } else {
+            dagrList.sort((a, b) -> a.creationDate.compareTo(b.creationDate));
+            result = Optional.of(dagrList);
+        }
+
+        return result;
+    }
+
     /**
      * Finds all DAGRs created on the given date
      *
@@ -86,7 +103,7 @@ public class DatabaseAccessor {
      *          The desired creation date for DAGRs to return, sorted by ascending date
      * */
     @Transactional
-    public  Optional<List<Dagr>> findDagrsByDate(Date date) {
+    public Optional<List<Dagr>> findDagrsByDate(Date date) {
         Optional<List<Dagr>> result;
 
         List<Dagr> dagrList = Dagr.FIND.where()
@@ -114,8 +131,37 @@ public class DatabaseAccessor {
      *          An Optional containing the List of all DAGRs matching the given annotationText.
      * */
     @Transactional
-    public Optional<List<Dagr>> findDagrsByAnnotation(String annotation) {
-        Optional<List<Dagr>> result = null;
+    public Optional<List<Dagr>> findDagrComponentsByAnnotation(String annotation) {
+        Optional<List<Dagr>> result;
+
+        List<Dagr> dagrList = Dagr.FIND.where()
+                .like("annotation", "%" + annotation + "%")
+                .findList();
+
+        if(dagrList == null) {
+            Logger.warn("Couldn't find DAGRs with annotation: " + annotation);
+            result = Optional.empty();
+        } else {
+            result = Optional.of(dagrList);
+        }
+
+        return result;
+    }
+
+    @Transactional
+    public Optional<List<Dagr>> findDagrsByAuthor(String author) {
+        Optional<List<Dagr>> result;
+
+        List<Dagr> dagrs = Dagr.FIND.where()
+                .like("author", "%" + author + "%")
+                .findList();
+
+        if(dagrs == null) {
+            result = Optional.empty();
+        } else {
+            result = Optional.of(dagrs);
+        }
+
         return result;
     }
 
@@ -182,6 +228,52 @@ public class DatabaseAccessor {
         return result;
     }
 
+    @Transactional
+    public Optional<Annotation> findAnnotationByUuid(UUID dagrUuid) {
+        Optional<Annotation> result;
+
+        try {
+            Annotation annotation = Annotation.FIND.where()
+                    .like("dagrUuid", "%" + dagrUuid + "%")
+                    .findUnique();
+            if(annotation == null) {
+                result = Optional.empty();
+            } else {
+                result = Optional.of(annotation);
+            }
+        } catch(NonUniqueResultException e) {
+            Logger.warn("Non-unique result found for UUID: " + dagrUuid);
+            result = Optional.empty();
+        }
+
+        return result;
+    }
+
+
+    /**
+     * Deletes the given annotation from the DAGR or DAGR component with the given UUID.
+     *
+     * @param uuid
+     *              The UUID of the DAGR or DAGR component from which to delete the annotation
+     *
+     * @param annotation
+     *              The annotation to be deleted.
+     * */
+    @Transactional
+    public boolean deleteAnnotation(UUID uuid, String annotation) {
+        boolean result;
+        Optional<Annotation> annotationOptional = findAnnotationByUuid(uuid);
+
+        if(annotationOptional.isPresent()) {
+            annotationOptional.get().delete();
+            result = true;
+        } else {
+            result = false;
+        }
+
+        return result;
+    }
+
     /**
      * Adds the given DagrComponent to the database
      *
@@ -193,7 +285,6 @@ public class DatabaseAccessor {
         dagrComponent.save();
         Logger.info("Successfully saved DAGR component with UUID: " + dagrComponent.dagrComponentUuid);
     }
-
 
     /**
      * Inserts the given DAGR to the database
@@ -217,4 +308,5 @@ public class DatabaseAccessor {
     private boolean containsUniqueUuid(UUID uuid) {
         return findDagrByUuid(uuid).isPresent();
     }
+
 }

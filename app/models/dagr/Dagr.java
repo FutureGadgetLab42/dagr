@@ -25,6 +25,8 @@ public class Dagr extends Model {
 
     public String dagrName;
 
+    public String author;
+
     @DateTime(pattern="dd/MM/yyyy")
     @CreatedTimestamp
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss z", timezone="GMT")

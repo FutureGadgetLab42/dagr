@@ -1,0 +1,13 @@
+@(dateForm: Form[controllers.http_methods.requests.FindDagrByDateRequest])
+
+@main("Date"){
+    <div class="container">
+        <div class="well">
+            @helper.form(action = routes.ApplicationController.findDagrByDate(), 'class -> "form-horizontal") {
+                @helper.inputDate(dateForm("startDate"))
+                @helper.inputDate(dateForm("endDate"))
+                <button type="submit" name="search" id="search" class="btn btn-primary">Search</button>
+            }
+        </div>
+    </div>
+}

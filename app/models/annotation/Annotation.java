@@ -32,6 +32,10 @@ public class Annotation extends Model {
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "annotations")
     public List<DagrComponent> annotatedDagrComponents;
 
+    public static final Find<Long, Annotation> FIND = new Find<Long, Annotation>(){};
+
+    protected Annotation() {}
+
     public Annotation(AnnotationBuilder annotationBuilder) {
         this.creationDate = annotationBuilder.getCreationDate();
         this.annotationText = annotationBuilder.getAnnotationText();
