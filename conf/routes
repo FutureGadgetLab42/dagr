@@ -11,6 +11,10 @@ GET     /                                          controllers.ApplicationContro
 
 GET     /insertPage                                controllers.ApplicationController.insertPage
 
+GET     /createDagrPage                           controllers.ApplicationController.createDagrPage
+
+GET     /insertFilePage                             controllers.ApplicationController.insertFilePage
+
 GET     /queryPage                                 controllers.ApplicationController.queryPage
 
 GET     /findByUuidPage                            controllers.ApplicationController.findByUuidPage
@@ -32,8 +36,6 @@ GET     /assets/*file                              controllers.Assets.versioned(
 
 POST    /api/v1/findDagrByUuid                     controllers.ApplicationController.findDagrByUuid
 
-GET     /api/v1/findComponentByUuid/:uuid          controllers.ApplicationController.findComponentByUuid(uuid: java.util.UUID)
-
 POST    /api/v1/findDagrByDate                     controllers.ApplicationController.findDagrByDate
 
 GET     /api/v1/reachQuery/:uuid                   controllers.ApplicationController.reachQuery(uuid: java.util.UUID)
@@ -46,10 +48,6 @@ GET     /api/v1/orphanReport                       controllers.ApplicationContro
 ########################################################################################################################
 # Creation requests
 ########################################################################################################################
-
-POST    /api/v1/createDagr                         controllers.ApplicationController.insertNewDocumentAsNewDagr
-
-POST    /api/v1/addComponent                       controllers.ApplicationController.insertNewDocumentAsComponent
 
 POST    /api/v1/addAnnotation                      controllers.ApplicationController.addAnnotationToDagr
 
@@ -64,5 +62,3 @@ POST    /api/v1/upload                             controllers.ApplicationContro
 GET     /api/v1/deleteDagr/:uuid                   controllers.ApplicationController.deleteDagr(uuid: java.util.UUID)
 
 POST    /api/v1/deleteAnnotation                   controllers.ApplicationController.deleteAnnotation
-
-GET     /api/v1/deleteComponent/:uuid              controllers.ApplicationController.deleteDagrComponent(uuid: java.util.UUID)

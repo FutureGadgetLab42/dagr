@@ -4,21 +4,50 @@ import java.util.Date;
 
 public class CreateDagrRequest {
 
-    private String documentName;
+    private String contentType;
     private String resourceLocation;
+    private String documentName;
+    private String author;
+    private String dagrName;
+    private Date lastModified;
     private Date documentCreationTime;
-    private Date documentLastModifiedTime;
-    private boolean containsDocument;
+    private long fileSize;
 
-    public CreateDagrRequest(String documentName, String resourceLocation,
-                             Date documentCreationTime, Date documentLastModifiedTime, boolean containsDocument) {
-        setDocumentName(documentName);
-        setResourceLocation(resourceLocation);
-        setDocumentCreationTime(documentCreationTime);
-        setDocumentLastModifiedTime(documentLastModifiedTime);
-        setContainsDocument(containsDocument);
+    public String getAuthor() {
+        return author;
     }
 
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+
+    public CreateDagrRequest(){}
+
+    public CreateDagrRequest(String documentName, String resourceLocation, String contentType,
+                             Date documentCreationTime, Date documentLastModifiedTime, long fileSize) {
+        setDocumentName(documentName);
+        setResourceLocation(resourceLocation);
+        setContentType(contentType);
+        setDocumentCreationTime(documentCreationTime);
+        setLastModified(documentLastModifiedTime);
+        setFileSize(fileSize);
+    }
+
+    public String getDagrName() {
+        return dagrName;
+    }
+
+    public void setDagrName(String dagrName) {
+        this.dagrName = dagrName;
+    }
+
+    public Date getDocumentCreationTime() {
+        return documentCreationTime;
+    }
+
+    public void setDocumentCreationTime(Date documentCreationTime) {
+        this.documentCreationTime = documentCreationTime;
+    }
     public String getDocumentName() {
         return documentName;
     }
@@ -35,27 +64,28 @@ public class CreateDagrRequest {
         this.resourceLocation = resourceLocation;
     }
 
-    public Date getDocumentCreationTime() {
-        return documentCreationTime;
+
+    public String getContentType() {
+        return contentType;
     }
 
-    public void setDocumentCreationTime(Date documentCreationTime) {
-        this.documentCreationTime = documentCreationTime;
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
     }
 
-    public Date getDocumentLastModifiedTime() {
-        return documentLastModifiedTime;
+    public Date getLastModified() {
+        return lastModified;
     }
 
-    public void setDocumentLastModifiedTime(Date documentLastModifiedTime) {
-        this.documentLastModifiedTime = documentLastModifiedTime;
+    public void setLastModified(Date lastModified) {
+        this.lastModified = lastModified;
     }
 
-    public boolean containsDocument() {
-        return containsDocument;
+    public long getFileSize() {
+        return fileSize;
     }
 
-    public void setContainsDocument(boolean containsDocument) {
-        this.containsDocument = containsDocument;
+    public void setFileSize(long fileSize) {
+        this.fileSize = fileSize;
     }
 }

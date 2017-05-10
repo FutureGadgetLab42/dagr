@@ -1,7 +1,7 @@
 package models.annotation.factories;
 
 import models.annotation.Annotation;
-import models.dagr.DagrComponent;
+import models.dagr.Dagr;
 
 import java.util.Date;
 import java.util.List;
@@ -10,14 +10,14 @@ public class AnnotationBuilder {
 
     private Date creationDate;
     private String annotationText;
-    private List<DagrComponent> annotatedComponents;
+    private List<Dagr> annotatedDagrs;
 
     public Annotation build() {
         return new Annotation(this);
     }
 
-    public void addComponent(DagrComponent component) {
-        this.annotatedComponents.add(component);
+    public void addComponent(Dagr dagr) {
+        this.annotatedDagrs.add(dagr);
     }
 
     public Date getCreationDate() {
@@ -36,11 +36,11 @@ public class AnnotationBuilder {
         this.annotationText = annotationText;
     }
 
-    public List<DagrComponent> getAnnotatedComponents() {
-        return annotatedComponents;
+    public List<Dagr> getAnnotatedDagrs() {
+        return annotatedDagrs;
     }
 
-    public void setAnnotatedComponents(List<DagrComponent> annotatedComponents) {
-        this.annotatedComponents = annotatedComponents;
+    public void setAnnotatedDagrs(List<Dagr> annotatedDagrs) {
+        this.annotatedDagrs = annotatedDagrs;
     }
 }

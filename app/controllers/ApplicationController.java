@@ -5,7 +5,6 @@ import controllers.http_methods.requests.*;
 import controllers.http_methods.validators.RequestValidator;
 import models.annotation.Annotation;
 import models.dagr.Dagr;
-import models.dagr.DagrComponent;
 import models.dagr.factories.FactoryWrapper;
 import play.Logger;
 import play.data.Form;
@@ -48,6 +47,14 @@ public class ApplicationController extends Controller {
 
     public Result insertPage() {
         return ok(views.html.insert.render());
+    }
+
+    public Result insertFilePage() {
+        return ok(views.html.file.render());
+    }
+
+    public Result createDagrPage() {
+        return ok("ok");
     }
 
     public Result queryPage() {
@@ -142,26 +149,9 @@ public class ApplicationController extends Controller {
         return response;
     }
 
-    /**
-     * Find component by UUID.
-     * */
-    @Transactional
-    public Result findComponentByUuid(UUID componentUuid){
-        Result response;
-
-        Optional<DagrComponent> dagrComponentOptional = DATABASE_ACCESSOR.findComponentByUuid(componentUuid);
-        if(dagrComponentOptional.isPresent()) {
-            response = ok(Json.toJson(dagrComponentOptional.get()));
-        } else {
-            response = ok("DAGR component not present: " + componentUuid);
-        }
-
-        return response;
-    }
-
     //TODO this method!
     @Transactional
-    public Result findDagrComponentByFileType(String fileType) {
+    public Result findDagrtByFileType(String fileType) {
         throw new RuntimeException("Not implemented");
     }
 
@@ -192,64 +182,6 @@ public class ApplicationController extends Controller {
      **************************************************************************************************/
 
     /**
-     * Inserts a new document as a new DAGR.
-     * */
-    @BodyParser.Of(BodyParser.class)
-    @Transactional
-    public Result insertNewDocumentAsNewDagr() {
-        Result response;
-        JsonNode requestBody = request().body().asJson();
-
-        try {
-            CreateDagrRequest createDagrRequest = REQUEST_VALIDATOR.validateCreateDagrRequest(requestBody);
-            Dagr createdDagr = FACTORIES.dagrFactory.buildDagr(createDagrRequest);
-            DATABASE_ACCESSOR.saveDagr(createdDagr);
-            response = ok(Json.toJson(createdDagr));
-        } catch(DagrCreationException e) {
-            Logger.warn("Received invalid request: " + requestBody);
-            response = badRequest("Invalid request: " + requestBody);
-        }
-
-        return response;
-    }
-
-
-    /**
-     * Adding a DAGR component.
-     * */
-    @Transactional
-    @BodyParser.Of(BodyParser.Json.class)
-    public Result insertNewDocumentAsComponent() {
-        Result response = null;
-        JsonNode requestBody = request().body().asJson();
-
-        if(requestBody == null) {
-            Logger.warn("Invalid request: " + requestBody);
-            response = badRequest("Invalid request: " + requestBody);
-        } else {
-            String uuidText = requestBody.findPath("parentDagrUuid").asText();
-
-            try{
-                UUID parentDagrUuid = UUID.fromString(uuidText);
-                Optional<Dagr> parentDagrOptional = DATABASE_ACCESSOR.findDagrByUuid(parentDagrUuid);
-
-                if(parentDagrOptional.isPresent()) {
-                    Dagr parentDagr = parentDagrOptional.get();
-                    DagrComponent dagrComponentToAdd = FACTORIES.dagrComponentFactory.buildDagrComponent(requestBody, parentDagr);
-                    DATABASE_ACCESSOR.saveComponent(dagrComponentToAdd);
-                    response = ok(Json.toJson(dagrComponentToAdd));
-                } else {
-                    response = badRequest("Invalid request. Parent DAGR does not exist: " + parentDagrUuid);
-                }
-            } catch(IllegalArgumentException e) {
-                response = badRequest("Invalid request. Invalid parent DAGR UUID: " + uuidText);
-            }
-        }
-
-        return response;
-    }
-
-    /**
      * Adding an annotation to the database.
      * */
     @Transactional
@@ -264,12 +196,12 @@ public class ApplicationController extends Controller {
         } else {
             try {
                 UUID uuid = UUID.fromString(uuidText);
-                Optional<DagrComponent> dagrComponentOptional = DATABASE_ACCESSOR.findComponentByUuid(uuid);
-                if(dagrComponentOptional.isPresent()) {
-                    DagrComponent dagrComponent = dagrComponentOptional.get();
-                    Annotation annotation = FACTORIES.annotationFactory.buildAnnotation(requestBody, dagrComponent);
+                Optional<Dagr> dagrOptional = DATABASE_ACCESSOR.findDagrByUuid(uuid);
+                if(dagrOptional.isPresent()) {
+                    Dagr dagr = dagrOptional.get();
+                    Annotation annotation = FACTORIES.annotationFactory.buildAnnotation(requestBody, dagr);
                     DATABASE_ACCESSOR.saveAnnotation(annotation);
-                    DATABASE_ACCESSOR.saveComponent(dagrComponent);
+                    DATABASE_ACCESSOR.saveDagr(dagr);
                     response = ok(Json.toJson(annotation));
                 } else {
                     Logger.info("Failed to find component with UUID: " + uuid);
@@ -299,16 +231,11 @@ public class ApplicationController extends Controller {
         Http.MultipartFormData.FilePart<File> mfdFile = requestBody.getFile("file");
         try {
             Map<String, String[]> formUrlEncoded = requestBody.asFormUrlEncoded();
-            UUID parentUuid = UUID.fromString(formUrlEncoded.get("uuid")[0]);
-            Optional<Dagr> parentDagr = DATABASE_ACCESSOR.findDagrByUuid(parentUuid);
-
-            if(parentDagr.isPresent()) {
-                CreateComponentRequest createComponentRequest = REQUEST_VALIDATOR.validateCreateComponentRequest(mfdFile);
-                DagrComponent resultingComponent = FACTORIES.dagrComponentFactory.buildDagrComponent(createComponentRequest, parentDagr.get());
-                response = ok(Json.toJson(resultingComponent));
-            } else {
-                response = badRequest("Invalid Parent DAGR UUID provided: " + parentUuid);
-            }
+            String dagrName = formUrlEncoded.get("name")[0], author = formUrlEncoded.get("author")[0];
+            CreateDagrRequest createDagrRequest = REQUEST_VALIDATOR.validateCreateDagrRequest(mfdFile, dagrName, author);
+            Dagr resultingDagr = FACTORIES.dagrFactory.buildDagr(createDagrRequest);
+            DATABASE_ACCESSOR.saveDagr(resultingDagr);
+            response = ok(Json.toJson(resultingDagr));
         } catch(CreateComponentException e) {
             flash("error", "Missing file");
             response = badRequest("Missing File");
@@ -341,26 +268,7 @@ public class ApplicationController extends Controller {
     }
 
     /**
-     * Deleting a DAGR component.
-     * */
-    @Transactional
-    public Result deleteDagrComponent(UUID componentUuid) {
-        Result response;
-
-        Optional<DagrComponent> componentToDeleteOptional = DATABASE_ACCESSOR.findComponentByUuid(componentUuid);
-        if(componentToDeleteOptional.isPresent()) {
-            componentToDeleteOptional.get().delete();
-            Logger.info("Successfully deleted component with UUID: " + componentUuid);
-            response = ok("Successfully deleted component with UUID: " + componentUuid);
-        } else {
-            Logger.info("Component does not exist: " + componentUuid);
-            response = ok("Component does not exist: " + componentUuid);
-        }
-        return response;
-    }
-
-    /**
-     * Deleting an annotation from a DAGR component.
+     * Deleting an annotation from a DAGR.
      * */
     @Transactional
     @BodyParser.Of(BodyParser.Json.class)

@@ -1,0 +1,13 @@
+
+@main("Create DAGR Page") {
+<div class="container">
+    <div class="well">
+        @helper.form(action = routes.ApplicationController.upload, 'enctype -> "multipart/form-data") {
+        DAGR name:
+        <input type="text" name="name">
+        <input type="file" name="file">
+        <p> <input type="submit"> </p>
+        }
+    </div>
+</div>
+}

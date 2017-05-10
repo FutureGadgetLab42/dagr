@@ -1,16 +1,16 @@
 package models.annotation.factories;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import models.dagr.Dagr;
 import utilities.exceptions.AnnotationCreationException;
 import models.annotation.Annotation;
-import models.dagr.DagrComponent;
 import play.Logger;
 
 import java.util.Date;
 
 public class AnnotationFactory {
 
-    public Annotation buildAnnotation(JsonNode requestJson, DagrComponent componentToAnnotate) throws AnnotationCreationException {
+    public Annotation buildAnnotation(JsonNode requestJson, Dagr dagrToAnnotate) throws AnnotationCreationException {
         String annotationText = requestJson.findPath("annotationText").asText();
 
         if(annotationText == null) {
@@ -18,10 +18,10 @@ public class AnnotationFactory {
             throw new AnnotationCreationException("Bad request: " + requestJson);
         } else {
             AnnotationBuilder annotationBuilder = new AnnotationBuilder();
-            annotationBuilder.addComponent(componentToAnnotate);
+            annotationBuilder.addComponent(dagrToAnnotate);
             annotationBuilder.setCreationDate(new Date());
             Annotation annotationToAdd = annotationBuilder.build();
-            componentToAnnotate.addAnnotation(annotationToAdd);
+            dagrToAnnotate.addAnnotation(annotationToAdd);
             return annotationToAdd;
         }
     }

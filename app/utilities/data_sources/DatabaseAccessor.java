@@ -2,7 +2,6 @@ package utilities.data_sources;
 
 import models.annotation.Annotation;
 import models.dagr.Dagr;
-import models.dagr.DagrComponent;
 import play.Logger;
 import play.db.ebean.Transactional;
 
@@ -199,36 +198,6 @@ public class DatabaseAccessor {
     }
 
     @Transactional
-    public Optional<DagrComponent> findComponentByUuid(UUID componentUuid) {
-        Optional<DagrComponent> result;
-
-        DagrComponent dagrComponent = DagrComponent.FIND
-                .where()
-                .like("dagrComponentUuid", "%" + componentUuid + "%")
-                .findUnique();
-
-        if(dagrComponent == null) {
-            result = Optional.empty();
-        } else {
-            result = Optional.of(dagrComponent);
-        }
-        return result;
-    }
-
-    @Transactional
-    public boolean deleteDagrComponentByUuid(UUID componenetUuid) {
-        boolean result;
-        Optional<DagrComponent> dagrComponentOptional =findComponentByUuid(componenetUuid);
-
-        if(dagrComponentOptional.isPresent()) {
-            result = dagrComponentOptional.get().delete();
-        } else {
-            result = false;
-        }
-        return result;
-    }
-
-    @Transactional
     public Optional<Annotation> findAnnotationByUuid(UUID dagrUuid) {
         Optional<Annotation> result;
 
@@ -272,18 +241,6 @@ public class DatabaseAccessor {
         }
 
         return result;
-    }
-
-    /**
-     * Adds the given DagrComponent to the database
-     *
-     * @param dagrComponent
-     *          The DagrComponent to be added.
-     * */
-    @Transactional
-    public void saveComponent(DagrComponent dagrComponent) {
-        dagrComponent.save();
-        Logger.info("Successfully saved DAGR component with UUID: " + dagrComponent.dagrComponentUuid);
     }
 
     /**

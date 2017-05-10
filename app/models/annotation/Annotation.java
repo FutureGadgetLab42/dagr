@@ -4,7 +4,7 @@ import com.avaje.ebean.Model;
 import com.avaje.ebean.annotation.CreatedTimestamp;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import models.annotation.factories.AnnotationBuilder;
-import models.dagr.DagrComponent;
+import models.dagr.Dagr;
 import play.data.format.Formats;
 import play.data.validation.Constraints;
 import play.data.validation.Constraints.Required;
@@ -30,7 +30,7 @@ public class Annotation extends Model {
     public String annotationText;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "annotations")
-    public List<DagrComponent> annotatedDagrComponents;
+    public List<Dagr> annotatedDagrs;
 
     public static final Find<Long, Annotation> FIND = new Find<Long, Annotation>(){};
 
@@ -39,6 +39,6 @@ public class Annotation extends Model {
     public Annotation(AnnotationBuilder annotationBuilder) {
         this.creationDate = annotationBuilder.getCreationDate();
         this.annotationText = annotationBuilder.getAnnotationText();
-        this.annotatedDagrComponents = annotationBuilder.getAnnotatedComponents();
+        this.annotatedDagrs = annotationBuilder.getAnnotatedDagrs();
     }
 }

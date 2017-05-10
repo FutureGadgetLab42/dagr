@@ -47,46 +47,24 @@ public class RequestValidator {
         return new BatchAddAnnotationsRequest(addAnnotationRequests);
     }
 
-    public CreateComponentRequest validateCreateComponentRequest(Http.MultipartFormData.FilePart<File> filePart) {
+
+    public CreateDagrRequest validateCreateDagrRequest(Http.MultipartFormData.FilePart<File> filePart, String name, String author) {
         if(filePart != null) {
+            CreateDagrRequest result = new CreateDagrRequest();
             File file = filePart.getFile();
-            CreateComponentRequest result = new CreateComponentRequest();
-            result.setFileName(filePart.getFilename());
+            result.setDagrName(name);
+            result.setDocumentName(filePart.getFilename());
             result.setContentType(filePart.getContentType());
             result.setResourceLocation(file.getAbsolutePath());
-            result.setLastModified(new Date(file.lastModified()));
+            result.setDocumentCreationTime(new Date(file.lastModified()));
+            result.setLastModified(result.getDocumentCreationTime());
             result.setFileSize(file.getTotalSpace());
+            result.setAuthor(author);
             return result;
         } else {
             Logger.warn("Invalid or missing file upload attempted.");
             throw new CreateComponentException("Invalid file");
         }
-    }
-
-    public CreateDagrRequest validateCreateDagrRequest(JsonNode requestBody) {
-        if(requestBody == null) {
-            Logger.warn("No request body provided");
-            throw new DagrCreationException("No request body provided");
-        }
-
-        String documentName = requestBody.findPath("documentName").asText(),
-                resourceLocation = requestBody.findPath("resourceLocation").asText();
-        Date documentCreationTime = new Date(requestBody.findPath("creationTime").asLong()),
-                documentLastModifiedTime = new Date(requestBody.findPath("lastModified").asLong());
-        Boolean containsDocument = requestBody.findPath("containsDocument").asBoolean();
-
-        if(documentName == null || resourceLocation == null
-                || documentCreationTime == null || documentLastModifiedTime == null) {
-            Logger.warn("Bad request: " + requestBody);
-            throw new DagrCreationException("Bad request: " + requestBody);
-        } else {
-            return new CreateDagrRequest(documentName, resourceLocation, documentCreationTime,
-                    documentLastModifiedTime, containsDocument);
-        }
-    }
-
-    public CreateDagrWithDocumentRequest validateCreateDagrWithDocumentRequest(JsonNode requestBody) {
-        throw new RuntimeException();
     }
 
     public DeleteAnnotationRequest validateDeleteAnnotationRequest(JsonNode requestBody) {
@@ -107,15 +85,7 @@ public class RequestValidator {
         }
     }
 
-    public DeleteComponentRequest validateDeleteComponentRequest(JsonNode requestBody) {
-        throw new RuntimeException();
-    }
-
     public DeleteDagrRequest validateDeleteDagrRequest(JsonNode requestBody) {
-        throw new RuntimeException();
-    }
-
-    public FindComponentByUuidRequest validateFindComponentByUuidRequest(JsonNode requestBody) {
         throw new RuntimeException();
     }
 

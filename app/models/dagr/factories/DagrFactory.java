@@ -17,14 +17,18 @@ import java.util.UUID;
 public class DagrFactory {
 
     public Dagr buildDagr(CreateDagrRequest request) throws DagrCreationException {
-        return buildDagr(request.getDocumentName(), request.getResourceLocation(),
-                request.getDocumentCreationTime(), request.getDocumentLastModifiedTime());
-    }
-
-    private Dagr buildDagr(String documentName, String resourceLocation, Date documentCreationTime, Date documentLastModifiedTime) {
         DagrBuilder dagrBuilder = new DagrBuilder();
-        dagrBuilder.setDagrCreationDate(new Date());
         dagrBuilder.setDagrUuid(UUID.randomUUID());
+        dagrBuilder.setDagrCreationDate(new Date());
+        dagrBuilder.setContentType(request.getContentType());
+        dagrBuilder.setResourceLocation(request.getResourceLocation());
+        dagrBuilder.setDocumentName(request.getDocumentName());
+        dagrBuilder.setDagrName(request.getDagrName());
+        dagrBuilder.setLastModified(request.getLastModified());
+        dagrBuilder.setDocumentCreationTime(request.getDocumentCreationTime());
+        dagrBuilder.setFileSize(request.getFileSize());
+        dagrBuilder.setAuthor(request.getAuthor());
         return dagrBuilder.build();
     }
+
 }
