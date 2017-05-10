@@ -1,10 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
 
-</body>
-</html>
+@main("Reach Query Page") {
+<div class="container">
+    <div class="well">
+        @helper.form(action = routes.ApplicationController.reachQuery, 'class -> "form-horizontal") {
+        UUID:
+        <input type="text" name="uuid">
+
+        <p> <input type="submit"> </p>
+        }
+    </div>
+</div>
+}

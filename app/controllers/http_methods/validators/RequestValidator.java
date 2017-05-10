@@ -2,7 +2,11 @@ package controllers.http_methods.validators;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import controllers.http_methods.requests.*;
+import models.annotation.Annotation;
+import models.dagr.Dagr;
+import play.libs.Json;
 import play.mvc.Http;
+import utilities.data_sources.DatabaseAccessor;
 import utilities.exceptions.*;
 import play.Logger;
 
@@ -16,37 +20,25 @@ public class RequestValidator {
 
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
-    public AddAnnotationRequest validateAddAnnotationRequest(JsonNode requestBody) throws DagrCreationException {
-        throw new RuntimeException();
-    }
+    public AddAnnotationRequest validateAddAnnotationRequest(Map<String, String[]> requestBody) throws DagrCreationException {
+        AddAnnotationRequest result = new AddAnnotationRequest();
 
-    public BatchAddAnnotationsRequest validateBatchAddAnnotationsRequest(JsonNode requestBody) {
-        if(requestBody == null) {
-            Logger.warn("No request body provided");
-            throw new BatchAddAnnotationException("No request body provided");
-        }
-
-        JsonNode annotationsNode = requestBody.findPath("annotations");
-        Iterator<JsonNode> elements = annotationsNode.iterator();
-        List<AddAnnotationRequest> addAnnotationRequests = new ArrayList<>();
-        while(elements.hasNext()) {
-            JsonNode annotationCreationRequest = elements.next();
+        String uuidText = requestBody.get("uuid")[0];
+        String annotationText = requestBody.get("annotation")[0];
+        if(annotationText == null) {
+            throw new AnnotationCreationException("Must give an annotation");
+        } else {
             try {
-                AddAnnotationRequest addAnnotationRequest = validateAddAnnotationRequest(annotationCreationRequest);
-                addAnnotationRequests.add(addAnnotationRequest);
-            } catch(AnnotationCreationException e) {
-                Logger.warn("Bad annotation creation request: " + annotationCreationRequest);
+                UUID uuid = UUID.fromString(uuidText);
+                result.setAnnotation(annotationText);
+                result.setUuidToAnnotate(uuid);
+                return result;
+            } catch(IllegalArgumentException e) {
+                Logger.warn("Attempted to add annotation with invalid uuid: " + uuidText);
+                throw new AnnotationCreationException("Attempted to add annotation with invalid uuid: " + uuidText);
             }
         }
-
-        if(addAnnotationRequests.isEmpty()) {
-            Logger.warn("Bad batch annotation creation request: " + requestBody);
-            throw new BatchAddAnnotationException("Bad batch annotation creation request: " + requestBody);
-        }
-
-        return new BatchAddAnnotationsRequest(addAnnotationRequests);
     }
-
 
     public CreateDagrRequest validateCreateDagrRequest(Http.MultipartFormData.FilePart<File> filePart, String name, String author) {
         if(filePart != null) {

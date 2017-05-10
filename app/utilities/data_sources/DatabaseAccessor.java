@@ -17,18 +17,9 @@ public class DatabaseAccessor {
      *              An optional containing the list of all present DAGRs.
      * */
     @Transactional
-    public Optional<List<Dagr>> listAllDagrs() {
-        Optional<List<Dagr>> result;
-        List<Dagr> dagrList = Dagr.FIND.all();
-
-        if(dagrList == null) {
-            result = Optional.empty();
-            Logger.info("Attempted to list all DAGRs while database is empty.");
-        } else {
-            dagrList.sort((a, b) -> a.creationDate.compareTo(b.creationDate));
-            result = Optional.of(dagrList);
-        }
-
+    public List<Dagr> listAllDagrs() {
+        List<Dagr> result = Dagr.FIND.all();
+        result.sort((a, b) -> a.creationDate.compareTo(b.creationDate));
         return result;
     }
 

@@ -4,26 +4,33 @@
 <div id="headerwrap">
     <div class="container">
         <div class="row">
-            <div class="col-lg-8 col-lg-offset-2">
-                <h2>Please Select The Query</h2>
-            </div>
 
             <div class="col-xs-6 col-sm-6">
                 <div class="thumbnail equalize">
-                    <img width='360' height='90' src="@routes.Assets.versioned("images/umdcs.png")"">
+                    <img width='360' height='60' src="@routes.Assets.versioned("images/files.png")"">
                     <div class="caption">
-                        <h3>Create DAGR</h3>
-                        <p><a href="@routes.ApplicationController.createDagrPage()" class="btn btn-primary" role="button">Create</a></p>
+                        <h3>Insert Files</h3>
+                        <p><a href="@routes.ApplicationController.insertFilePage()" class="btn btn-primary" role="button">Insert</a></p>
                     </div>
                 </div>
             </div>
 
             <div class="col-xs-6 col-sm-6">
                 <div class="thumbnail equalize">
-                    <img width='360' height='60' src="@routes.Assets.versioned("images/umdcs.png")"">
+                    <img width='360' height='90' src="@routes.Assets.versioned("images/annotation.jpg")"">
                     <div class="caption">
-                        <h3>Insert Files</h3>
-                        <p><a href="@routes.ApplicationController.insertFilePage()" class="btn btn-primary" role="button">Insert</a></p>
+                        <h3>Insert Annotation</h3>
+                        <p><a href="@routes.ApplicationController.cqteAnnotationPage()" class="btn btn-primary" role="button">Create</a></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-6 col-sm-6">
+                <div class="thumbnail equalize">
+                    <img width='360' height='90' src="@routes.Assets.versioned("images/link.png")"">
+                    <div class="caption">
+                        <h3>Insert Link</h3>
+                        <p><a href="@routes.ApplicationController.linkPage()" class="btn btn-primary" role="button">Create</a></p>
                     </div>
                 </div>
             </div>

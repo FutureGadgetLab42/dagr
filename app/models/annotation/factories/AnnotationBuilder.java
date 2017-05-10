@@ -3,6 +3,7 @@ package models.annotation.factories;
 import models.annotation.Annotation;
 import models.dagr.Dagr;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -11,6 +12,10 @@ public class AnnotationBuilder {
     private Date creationDate;
     private String annotationText;
     private List<Dagr> annotatedDagrs;
+
+    public AnnotationBuilder(){
+        this.annotatedDagrs = new ArrayList<>();
+    }
 
     public Annotation build() {
         return new Annotation(this);

@@ -6,6 +6,8 @@ import models.annotation.Annotation;
 import models.annotation.factories.AnnotationFactory;
 import models.dagr.Dagr;
 
+import java.util.Map;
+
 public class FactoryWrapper {
     public DagrFactory dagrFactory;
     public AnnotationFactory annotationFactory;
@@ -19,7 +21,7 @@ public class FactoryWrapper {
         return dagrFactory.buildDagr(createDagrRequest);
     }
 
-    public Annotation buildAnnotation(JsonNode requestJson, Dagr dagrToAnnotate) {
-        return annotationFactory.buildAnnotation(requestJson, dagrToAnnotate);
+    public Annotation buildAnnotation(Map<String, String[]> requestBody, Dagr dagrToAnnotate) {
+        return annotationFactory.buildAnnotation(requestBody, dagrToAnnotate);
     }
 }

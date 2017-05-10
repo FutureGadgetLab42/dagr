@@ -6,6 +6,8 @@ public class AddAnnotationRequest {
     private String annotation;
     private UUID uuidToAnnotate;
 
+    public AddAnnotationRequest(){}
+
     public AddAnnotationRequest(String annotation, UUID componentToAnnotate) {
         this.annotation = annotation;
         this.uuidToAnnotate = componentToAnnotate;

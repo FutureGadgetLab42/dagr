@@ -4,9 +4,6 @@
     <div id="headerwrap">
         <div class="container">
             <div class="row">
-                <div class="col-lg-8 col-lg-offset-2">
-                    <h2>Please Select The Query</h2>
-                </div>
 
                 <div class="col-xs-6 col-sm-6">
                     <div class="thumbnail equalize">
@@ -33,7 +30,7 @@
                         <img width='360' height='90' src="@routes.Assets.versioned("images/digraph.jpg")"">
                         <div class="caption">
                             <h3>Reach Query</h3>
-                            <p><a href="yearQuery.php" class="btn btn-primary" role="button">Query</a></p>
+                            <p><a href="@routes.ApplicationController.reachQueryPage()" class="btn btn-primary" role="button">Query</a></p>
                         </div>
                     </div>
                 </div>
@@ -43,7 +40,7 @@
                         <img width='360' height='90' src="@routes.Assets.versioned("images/sterile.jpg")"">
                         <div class="caption">
                             <h3>Sterile Report</h3>
-                            <p><a href="yearQuery.php" class="btn btn-primary" role="button">Query</a></p>
+                            <p><a href="@routes.ApplicationController.sterileReport()" class="btn btn-primary" role="button">Query</a></p>
                         </div>
                     </div>
                 </div>
@@ -53,7 +50,17 @@
                         <img width='360' height='90' src="@routes.Assets.versioned("images/orphan.png")"">
                         <div class="caption">
                             <h3>Orphan Report</h3>
-                            <p><a href="yearQuery.php" class="btn btn-primary" role="button">Query</a></p>
+                            <p><a href="@routes.ApplicationController.orphanReport()" class="btn btn-primary" role="button">Query</a></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xs-6 col-sm-6">
+                    <div class="thumbnail equalize">
+                        <img width='360' height='90' src="@routes.Assets.versioned("images/listall.jpg")"">
+                        <div class="caption">
+                            <h3>List All</h3>
+                            <p><a href="@routes.ApplicationController.listAll()" class="btn btn-primary" role="button">Query</a></p>
                         </div>
                     </div>
                 </div>

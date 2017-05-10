@@ -1,5 +1,7 @@
 package models.dagr;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import models.annotation.Annotation;
 import models.dagr.factories.DagrBuilder;
 import com.avaje.ebean.Model;
@@ -7,7 +9,6 @@ import com.avaje.ebean.annotation.CreatedTimestamp;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import play.data.format.Formats.DateTime;
 import play.data.validation.Constraints.Required;
-import utilities.Constants;
 
 import javax.persistence.*;
 import java.util.*;
@@ -34,9 +35,11 @@ public class Dagr extends Model {
     public Date creationDate, documentCreationDate, lastModified;
 
     @ManyToMany
-    public Set<Dagr> linkedDagrs = new HashSet<>();
+    @JsonIgnore
+    public Set<Dagr> childDagrs;
 
     @ManyToMany(fetch = FetchType.LAZY)
+    @JsonManagedReference
     public Set<Annotation> annotations;
 
     public static final Find<Long, Dagr> FIND = new Find<Long, Dagr>(){};
@@ -58,5 +61,9 @@ public class Dagr extends Model {
 
     public void addAnnotation(Annotation annotationToAdd) {
         this.annotations.add(annotationToAdd);
+    }
+
+    public void addAdjacentDagr(Dagr adjacentDagr) {
+        this.childDagrs.add(adjacentDagr);
     }
 }

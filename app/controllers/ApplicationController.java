@@ -16,17 +16,15 @@ import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
 import utilities.data_sources.DatabaseAccessor;
+import utilities.exceptions.AnnotationCreationException;
 import utilities.exceptions.CreateComponentException;
-import utilities.exceptions.DagrCreationException;
 import utilities.exceptions.DeleteAnnotationException;
 import utilities.exceptions.FindDagrByDateException;
 
 import javax.inject.Inject;
 import java.io.File;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class ApplicationController extends Controller {
 
@@ -53,8 +51,9 @@ public class ApplicationController extends Controller {
         return ok(views.html.file.render());
     }
 
-    public Result createDagrPage() {
-        return ok("ok");
+    public Result linkPage() {
+        Form<LinkDagrRequest> requestForm = FORM_FACTORY.form(LinkDagrRequest.class);
+        return ok(views.html.link.render(requestForm));
     }
 
     public Result queryPage() {
@@ -72,15 +71,11 @@ public class ApplicationController extends Controller {
     }
 
     public Result reachQueryPage() {
-        return ok("ok");
+        return ok(views.html.reach.render());
     }
 
-    public Result sterileReportPage() {
-        return ok("ok");
-    }
-
-    public Result orphanReportPage() {
-        return ok("ok");
+    public Result createAnnotationPage() {
+        return ok(views.html.annotation.render());
     }
 
     /**************************************************************************************************
@@ -155,27 +150,70 @@ public class ApplicationController extends Controller {
         throw new RuntimeException("Not implemented");
     }
 
-    //TODO
     @Transactional
-    @BodyParser.Of(BodyParser.Json.class)
     public Result orphanReport() {
-        throw new RuntimeException("Not yet implemented");
+        List<Dagr> allDagrs = DATABASE_ACCESSOR.listAllDagrs();
+        Set<Dagr> allDagrSet = new HashSet<>();
+        allDagrs.forEach(d -> allDagrSet.add(d));
+        allDagrs.forEach(d -> {
+            d.childDagrs.forEach(c -> {
+                allDagrSet.remove(c);
+            });
+        });
+        return ok(Json.toJson(allDagrSet));
     }
 
-    //TODO
     @Transactional
-    @BodyParser.Of(BodyParser.Json.class)
     public Result sterileReport() {
-        throw new RuntimeException("not yet implemented");
+        return ok(Json.toJson(DATABASE_ACCESSOR.listAllDagrs().stream().filter(d -> d.childDagrs.size() == 0).toArray()));
     }
 
-    //TODO
     @Transactional
-    @BodyParser.Of(BodyParser.Json.class)
-    public Result reachQuery(UUID uuid) {
-        throw new RuntimeException("not yet implemented");
+    public Result reachQuery() {
+        Result response = null;
+
+        Map<String, String[]> requestBody = request().body().asFormUrlEncoded();
+        try{
+            UUID uuid = UUID.fromString(requestBody.get("uuid")[0]);
+            Optional<Dagr> dagrOptional = DATABASE_ACCESSOR.findDagrByUuid(uuid);
+            if(dagrOptional.isPresent()) {
+                response = ok(Json.toJson(dagrBfs(dagrOptional.get())));
+            } else {
+                response = badRequest("UUID not present: " + uuid);
+            }
+        } catch (IllegalArgumentException e) {
+            response = badRequest("Invalid UUID");
+            Logger.warn("Attempted reach query with invalid request body: " + requestBody);
+        }
+
+        return response;
     }
 
+    @Transactional
+    private Set<Dagr> dagrBfs(Dagr startDagr) {
+        Set<Dagr> result = new HashSet<>();
+        PriorityQueue<Dagr> queue = new PriorityQueue<>();
+        queue.add(startDagr);
+
+        while(!queue.isEmpty()) {
+            Dagr currentDagr = queue.poll();
+            result.add(currentDagr);
+            Set<Dagr> adjacentDagrs = currentDagr.childDagrs;
+
+            adjacentDagrs.forEach(d -> {
+                if(!result.contains(d)) {
+                    queue.add(d);
+                }
+            });
+        }
+
+        return result;
+    }
+
+    @Transactional
+    public Result listAll() {
+        return ok(Json.toJson(DATABASE_ACCESSOR.listAllDagrs()));
+    }
 
     /**************************************************************************************************
      * Creation Requests
@@ -185,14 +223,22 @@ public class ApplicationController extends Controller {
      * Adding an annotation to the database.
      * */
     @Transactional
-    @BodyParser.Of(BodyParser.Json.class)
-    public Result addAnnotationToDagr() {
-        Result response = null;
-        JsonNode requestBody = request().body().asJson();
-        String uuidText = requestBody.findPath("componentUuid").asText();
-        if(uuidText == null) {
-            Logger.warn("Attempted to add annotation to invalid UUID: " + uuidText);
-            response = badRequest("Invalid UUID: " + uuidText);
+    public Result addAnnotation() {
+        Result response;
+
+        Map<String, String[]> requestBody = request().body().asFormUrlEncoded();
+        try {
+            REQUEST_VALIDATOR.validateAddAnnotationRequest(requestBody);
+        } catch(AnnotationCreationException e) {
+            Logger.warn("Invalid annotation request: " + requestBody);
+            response = badRequest("Invalid annotation request");
+        }
+
+        String uuidText = requestBody.get("uuid")[0];
+
+        String annotationText = requestBody.get("annotation")[0];
+        if(annotationText == null) {
+            response = badRequest("Must add an annotation.");
         } else {
             try {
                 UUID uuid = UUID.fromString(uuidText);
@@ -201,6 +247,7 @@ public class ApplicationController extends Controller {
                     Dagr dagr = dagrOptional.get();
                     Annotation annotation = FACTORIES.annotationFactory.buildAnnotation(requestBody, dagr);
                     DATABASE_ACCESSOR.saveAnnotation(annotation);
+                    dagr.addAnnotation(annotation);
                     DATABASE_ACCESSOR.saveDagr(dagr);
                     response = ok(Json.toJson(annotation));
                 } else {
@@ -208,8 +255,8 @@ public class ApplicationController extends Controller {
                     response = ok("Component not found: " + uuid);
                 }
             } catch(IllegalArgumentException e) {
-                Logger.warn("Attempted to parse invalid UUID: " + uuidText);
-                response = badRequest("Invalid UUID provided: " + uuidText);
+                Logger.warn("Attempted to add annotation with invalid uuid: " + uuidText);
+                response = badRequest("Invalid UUID: " + uuidText);
             }
         }
         return response;
@@ -239,13 +286,34 @@ public class ApplicationController extends Controller {
         } catch(CreateComponentException e) {
             flash("error", "Missing file");
             response = badRequest("Missing File");
-        } catch(IllegalArgumentException e) {
-            flash("error", "Invalid parent UUID");
-            response = badRequest("Invalid parent UUID");
         }
         return response;
     }
 
+    @Transactional
+    public Result linkDagrs() {
+        Result response;
+        Map<String, String[]> requestBody = request().body().asFormUrlEncoded();
+        try {
+            UUID parentUuid = UUID.fromString(requestBody.get("parentUuid")[0]);
+            UUID childUuid = UUID.fromString(requestBody.get("childUuid")[0]);
+            Optional<Dagr> parentDagrOptional = DATABASE_ACCESSOR.findDagrByUuid(parentUuid);
+            Optional<Dagr> childDagrOptional = DATABASE_ACCESSOR.findDagrByUuid(childUuid);
+            if(parentDagrOptional.isPresent() && childDagrOptional.isPresent()) {
+                Dagr parentDagr = parentDagrOptional.get();
+                parentDagr.addAdjacentDagr(childDagrOptional.get());
+                DATABASE_ACCESSOR.saveDagr(parentDagr);
+                response = ok("Parent: " + parentUuid + " child: " + childUuid);
+            } else {
+                response = badRequest("UUID not present");
+            }
+        } catch (IllegalArgumentException e) {
+            Logger.warn("Invalid rqeuest to link DAGRs " + requestBody);
+            response = badRequest("Invalid request");
+        }
+
+        return response;
+    }
 
     /**************************************************************************************************
      * Deletion Requests

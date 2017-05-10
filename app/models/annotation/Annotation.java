@@ -2,6 +2,8 @@ package models.annotation;
 
 import com.avaje.ebean.Model;
 import com.avaje.ebean.annotation.CreatedTimestamp;
+import com.avaje.ebean.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import models.annotation.factories.AnnotationBuilder;
 import models.dagr.Dagr;
@@ -10,6 +12,7 @@ import play.data.validation.Constraints;
 import play.data.validation.Constraints.Required;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -30,6 +33,7 @@ public class Annotation extends Model {
     public String annotationText;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "annotations")
+    @JsonBackReference
     public List<Dagr> annotatedDagrs;
 
     public static final Find<Long, Annotation> FIND = new Find<Long, Annotation>(){};
@@ -39,6 +43,7 @@ public class Annotation extends Model {
     public Annotation(AnnotationBuilder annotationBuilder) {
         this.creationDate = annotationBuilder.getCreationDate();
         this.annotationText = annotationBuilder.getAnnotationText();
+        this.annotatedDagrs = annotationBuilder.getAnnotatedDagrs();
         this.annotatedDagrs = annotationBuilder.getAnnotatedDagrs();
     }
 }

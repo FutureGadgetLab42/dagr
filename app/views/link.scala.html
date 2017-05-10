@@ -1,0 +1,13 @@
+@(linkForm: Form[controllers.http_methods.requests.LinkDagrRequest])
+
+@main("Link"){
+<div class="container">
+    <div class="well">
+        @helper.form(action = routes.ApplicationController.linkDagrs(), 'class -> "form-horizontal") {
+            @helper.inputText(linkForm("parentUuid"))
+            @helper.inputText(linkForm("childUuid"))
+        <button type="submit" name="search" id="search" class="btn btn-primary">Link</button>
+        }
+    </div>
+</div>
+}

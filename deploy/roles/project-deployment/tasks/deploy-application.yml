@@ -2,6 +2,22 @@
 
 - include_vars: main.yml
 
+- stat: path=/home/ubuntu/dagr-1.0/RUNNING_PID
+  register: running_pid
+
+- name: Kill old process
+  shell: kill $(cat /home/ubuntu/dagr-1.0/RUNNING_PID)
+  when: running_pid.stat.exists == True
+  tags:
+    - kill-process
+
+- name: Delete old dir
+  file:
+    state: absent
+    path: ~/dagr-1.0
+  tags:
+    - delete-dir
+
 - name: Build executable
   local_action: command /usr/local/bin/activator clean dist
   tags:

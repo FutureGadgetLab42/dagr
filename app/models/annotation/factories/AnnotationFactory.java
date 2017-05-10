@@ -7,21 +7,22 @@ import models.annotation.Annotation;
 import play.Logger;
 
 import java.util.Date;
+import java.util.Map;
 
 public class AnnotationFactory {
 
-    public Annotation buildAnnotation(JsonNode requestJson, Dagr dagrToAnnotate) throws AnnotationCreationException {
-        String annotationText = requestJson.findPath("annotationText").asText();
+    public Annotation buildAnnotation(Map<String, String[]> requestBody, Dagr dagrToAnnotate) throws AnnotationCreationException {
+        String annotationText = requestBody.get("annotation")[0];
 
         if(annotationText == null) {
-            Logger.warn("Bad request: " + requestJson);
-            throw new AnnotationCreationException("Bad request: " + requestJson);
+            Logger.warn("Bad request: no annotation supplied.");
+            throw new AnnotationCreationException("Bad request: no annotation supplied." );
         } else {
             AnnotationBuilder annotationBuilder = new AnnotationBuilder();
             annotationBuilder.addComponent(dagrToAnnotate);
             annotationBuilder.setCreationDate(new Date());
+            annotationBuilder.setAnnotationText(annotationText);
             Annotation annotationToAdd = annotationBuilder.build();
-            dagrToAnnotate.addAnnotation(annotationToAdd);
             return annotationToAdd;
         }
     }

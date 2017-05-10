@@ -11,9 +11,11 @@ GET     /                                          controllers.ApplicationContro
 
 GET     /insertPage                                controllers.ApplicationController.insertPage
 
-GET     /createDagrPage                           controllers.ApplicationController.createDagrPage
+GET     /createAnnotationPage                      controllers.ApplicationController.createAnnotationPage
 
 GET     /insertFilePage                             controllers.ApplicationController.insertFilePage
+
+GET     /linkPage                                   controllers.ApplicationController.linkPage
 
 GET     /queryPage                                 controllers.ApplicationController.queryPage
 
@@ -23,11 +25,9 @@ GET     /findByDatePage                             controllers.ApplicationContr
 
 GET     /reachQueryPage                             controllers.ApplicationController.reachQueryPage
 
-GET     /sterileReportPage                             controllers.ApplicationController.sterileReportPage
-
-GET     /orphanReportPage                            controllers.ApplicationController.orphanReportPage
-
 GET     /assets/*file                              controllers.Assets.versioned(path="/public", file: Asset)
+
+GET     /listAll                                    controllers.ApplicationController.listAll
 
 
 ########################################################################################################################
@@ -38,7 +38,7 @@ POST    /api/v1/findDagrByUuid                     controllers.ApplicationContro
 
 POST    /api/v1/findDagrByDate                     controllers.ApplicationController.findDagrByDate
 
-GET     /api/v1/reachQuery/:uuid                   controllers.ApplicationController.reachQuery(uuid: java.util.UUID)
+POST     /api/v1/reachQuery                        controllers.ApplicationController.reachQuery
 
 GET     /api/v1/sterileReport                      controllers.ApplicationController.sterileReport
 
@@ -49,11 +49,13 @@ GET     /api/v1/orphanReport                       controllers.ApplicationContro
 # Creation requests
 ########################################################################################################################
 
-POST    /api/v1/addAnnotation                      controllers.ApplicationController.addAnnotationToDagr
+POST    /api/v1/addAnnotation                      controllers.ApplicationController.addAnnotation
 
 POST    /api/v1/batchAddAnnotations                controllers.ApplicationController.batchAddAnnotations
 
 POST    /api/v1/upload                             controllers.ApplicationController.upload
+
+POST    /api/v1/link                                controllers.ApplicationController.linkDagrs
 
 ########################################################################################################################
 # Deletion requests
