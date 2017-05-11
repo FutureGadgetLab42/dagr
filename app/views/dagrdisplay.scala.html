@@ -16,8 +16,22 @@
                 Document Creation Date: @dagr.documentCreationDate<br>
                 Last Modified Date: @dagr.lastModified<br>
                 Annotations:
-                @for(anno <- dagr.annotations) {
-                    annotationText,
+                @if(dagr.annotations != null) {
+                    @for(anno <- dagr.annotations) {
+                        @anno.annotationText,
+                    }
+                }
+                <br>
+                Parent DAGR:
+                @if(dagr.parentDagr != null) {
+                    @dagr.parentDagr.dagrUuid
+                }
+                <br>
+                Child DAGRs:
+                @if(dagr.childDagrs != null) {
+                    @for(d <- dagr.childDagrs) {
+                        @d.dagrUuid,
+                    }
                 }
                 <br><br>
             </div>

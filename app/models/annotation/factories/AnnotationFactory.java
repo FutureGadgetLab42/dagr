@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class AnnotationFactory {
 
-    public Annotation buildAnnotation(Map<String, String[]> requestBody, Dagr dagrToAnnotate) throws AnnotationCreationException {
+    public Annotation buildAnnotation(Map<String, String[]> requestBody) throws AnnotationCreationException {
         String annotationText = requestBody.get("annotation")[0];
 
         if(annotationText == null) {
@@ -19,7 +19,6 @@ public class AnnotationFactory {
             throw new AnnotationCreationException("Bad request: no annotation supplied." );
         } else {
             AnnotationBuilder annotationBuilder = new AnnotationBuilder();
-            annotationBuilder.addComponent(dagrToAnnotate);
             annotationBuilder.setCreationDate(new Date());
             annotationBuilder.setAnnotationText(annotationText);
             Annotation annotationToAdd = annotationBuilder.build();

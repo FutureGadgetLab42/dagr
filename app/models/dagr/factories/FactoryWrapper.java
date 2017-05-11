@@ -22,6 +22,6 @@ public class FactoryWrapper {
     }
 
     public Annotation buildAnnotation(Map<String, String[]> requestBody, Dagr dagrToAnnotate) {
-        return annotationFactory.buildAnnotation(requestBody, dagrToAnnotate);
+        return annotationFactory.buildAnnotation(requestBody);
     }
 }

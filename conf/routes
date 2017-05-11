@@ -54,7 +54,7 @@ POST    /api/v1/findDagrByName                      controllers.ApplicationContr
 
 POST    /api/v1/findDagrByContentType               controllers.ApplicationController.findDagrByContentType
 
-
+POST    /api/v1/findDagrByAnnotation                controllers.ApplicationController.findDagrByAnnotation
 
 POST     /api/v1/reachQuery                        controllers.ApplicationController.reachQuery
 

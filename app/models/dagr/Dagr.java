@@ -34,7 +34,11 @@ public class Dagr extends Model {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss z", timezone="GMT")
     public Date creationDate, documentCreationDate, lastModified;
 
-    @ManyToMany
+    @JsonIgnore
+    @ManyToOne
+    public Dagr parentDagr;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "parentDagr")
     @JsonIgnore
     public Set<Dagr> childDagrs;
 
@@ -47,7 +51,6 @@ public class Dagr extends Model {
     protected Dagr() {}
 
     public Dagr(DagrBuilder dagrBuilder) {
-        this.annotations = new HashSet<>();
         this.creationDate = dagrBuilder.getDagrCreationDate();
         this.documentCreationDate = dagrBuilder.getDocumentCreationTime();
         this.dagrUuid = dagrBuilder.getDagrUuid();

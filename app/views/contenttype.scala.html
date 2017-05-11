@@ -2,7 +2,7 @@
 @main("Content Type"){
 <div class="container">
     <div class="well">
-        @helper.form(action = routes.ApplicationController.findDagrByAuthor(), 'class -> "form-horizontal") {
+        @helper.form(action = routes.ApplicationController.findDagrByContentType(), 'class -> "form-horizontal") {
         Content Type:
         <input type="text" name="contentType">
         <button type="submit" name="search" id="search" class="btn btn-primary">Search</button>

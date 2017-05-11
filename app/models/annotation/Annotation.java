@@ -29,7 +29,6 @@ public class Annotation extends Model {
     public Date creationDate;
 
     @Required
-    @Lob
     public String annotationText;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "annotations")
@@ -43,7 +42,5 @@ public class Annotation extends Model {
     public Annotation(AnnotationBuilder annotationBuilder) {
         this.creationDate = annotationBuilder.getCreationDate();
         this.annotationText = annotationBuilder.getAnnotationText();
-        this.annotatedDagrs = annotationBuilder.getAnnotatedDagrs();
-        this.annotatedDagrs = annotationBuilder.getAnnotatedDagrs();
     }
 }

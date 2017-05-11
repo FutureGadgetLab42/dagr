@@ -188,6 +188,11 @@ public class ApplicationController extends Controller {
     }
 
     @Transactional
+    public Result findDagrByAnnotation() {
+        return ok("ok");
+    }
+
+    @Transactional
     public Result orphanReport() {
         List<Dagr> allDagrs = DATABASE_ACCESSOR.listAllDagrs();
         Set<Dagr> allDagrSet = new HashSet<>();
@@ -280,10 +285,13 @@ public class ApplicationController extends Controller {
                 Optional<Dagr> dagrOptional = DATABASE_ACCESSOR.findDagrByUuid(uuid);
                 if(dagrOptional.isPresent()) {
                     Dagr dagr = dagrOptional.get();
-                    Annotation annotation = FACTORIES.annotationFactory.buildAnnotation(requestBody, dagr);
+                    Annotation annotation = FACTORIES.annotationFactory.buildAnnotation(requestBody);
                     DATABASE_ACCESSOR.saveAnnotation(annotation);
                     dagr.addAnnotation(annotation);
                     dagr.update();
+                    annotation = DATABASE_ACCESSOR.findAnnotationById(annotation.id).get();
+                    annotation.annotatedDagrs.add(dagr);
+                    annotation.update();
                     response = this.createAnnotationPage();
                 } else {
                     Logger.info("Failed to find component with UUID: " + uuid);
@@ -356,9 +364,10 @@ public class ApplicationController extends Controller {
             Optional<Dagr> childDagrOptional = DATABASE_ACCESSOR.findDagrByUuid(childUuid);
             if(parentDagrOptional.isPresent() && childDagrOptional.isPresent()) {
                 Dagr parentDagr = parentDagrOptional.get(), childDagr = childDagrOptional.get();
-                if(parentDagr.childDagrs.stream().noneMatch(cd -> cd.dagrUuid == childDagr.dagrUuid)
-                        && childDagr.childDagrs.stream().noneMatch(cd -> cd.dagrUuid == childDagr.dagrUuid)) {
-                    parentDagr.addAdjacentDagr(childDagrOptional.get());
+                if(parentDagr.childDagrs.stream().noneMatch(cd -> cd.dagrUuid.equals(childDagr.dagrUuid))) {
+                    parentDagr.addAdjacentDagr(childDagr);
+                    childDagr.parentDagr = parentDagr;
+                    childDagr.update();
                     parentDagr.update();
                 }
                 response = this.linkPage();

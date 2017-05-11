@@ -159,7 +159,7 @@ public class DatabaseAccessor {
     public Optional<Dagr> findDagrByName(String name) {
         Optional<Dagr> result;
         Dagr dagr = Dagr.FIND.where()
-                .like("name", "%" + name + "%")
+                .like("dagrName", "%" + name + "%")
                 .findUnique();
 
         if(dagr == null) {
@@ -209,6 +209,18 @@ public class DatabaseAccessor {
         } else {
             return false;
         }
+    }
+
+    @Transactional
+    public Optional<Annotation> findAnnotationById(long id) {
+        Optional<Annotation> result;
+        Annotation annotation = Annotation.FIND.byId(id);
+        if(annotation == null) {
+            result = Optional.empty();
+        } else {
+            result = Optional.of(annotation);
+        }
+        return result;
     }
 
     @Transactional

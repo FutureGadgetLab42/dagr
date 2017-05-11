@@ -1,0 +1,12 @@
+
+@main("Find by annotation"){
+<div class="container">
+    <div class="well">
+        @helper.form(action = routes.ApplicationController.findDagrByAnnotation(), 'class -> "form-horizontal") {
+        Annotation:
+        <input type="text" name="annotation">
+        <button type="submit" name="search" id="search" class="btn btn-primary">Search</button>
+        }
+    </div>
+</div>
+}
