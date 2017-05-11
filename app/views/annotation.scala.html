@@ -4,8 +4,8 @@
     <div class="well">
         @helper.form(action = routes.ApplicationController.addAnnotation, 'class -> "form-horizontal") {
         Annotation:
-        <input type="text" name="annotation">
-
+        <input type="text" name="annotation" style="width: 300px; height: 300px;">
+        <br>
         DAGR UUID:
         <input type="text" name="uuid">
         <p> <input type="submit"> </p>

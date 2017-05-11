@@ -15,6 +15,8 @@ GET     /createAnnotationPage                      controllers.ApplicationContro
 
 GET     /insertFilePage                             controllers.ApplicationController.insertFilePage
 
+GET     /batchInsertPage                            controllers.ApplicationController.batchInsertPage
+
 GET     /linkPage                                   controllers.ApplicationController.linkPage
 
 GET     /queryPage                                 controllers.ApplicationController.queryPage
@@ -23,7 +25,15 @@ GET     /findByUuidPage                            controllers.ApplicationContro
 
 GET     /findByDatePage                             controllers.ApplicationController.findByDatePage
 
+GET     /findByNamePage                             controllers.ApplicationController.findByNamePage
+
+GET     /findByAuthorPage                           controllers.ApplicationController.findByAuthorPage
+
+GET     /findByTypePage                             controllers.ApplicationController.findByTypePage
+
 GET     /reachQueryPage                             controllers.ApplicationController.reachQueryPage
+
+GET     /renameDagrPage                             controllers.ApplicationController.renameDagrPage
 
 GET     /assets/*file                              controllers.Assets.versioned(path="/public", file: Asset)
 
@@ -37,6 +47,14 @@ GET     /listAll                                    controllers.ApplicationContr
 POST    /api/v1/findDagrByUuid                     controllers.ApplicationController.findDagrByUuid
 
 POST    /api/v1/findDagrByDate                     controllers.ApplicationController.findDagrByDate
+
+POST    /api/v1/findDagrByAuthor                    controllers.ApplicationController.findDagrByAuthor
+
+POST    /api/v1/findDagrByName                      controllers.ApplicationController.findDagrByName
+
+POST    /api/v1/findDagrByContentType               controllers.ApplicationController.findDagrByContentType
+
+
 
 POST     /api/v1/reachQuery                        controllers.ApplicationController.reachQuery
 
@@ -53,9 +71,13 @@ POST    /api/v1/addAnnotation                      controllers.ApplicationContro
 
 POST    /api/v1/batchAddAnnotations                controllers.ApplicationController.batchAddAnnotations
 
+POST    /api/v1/batchUpload                         controllers.ApplicationController.batchUpload
+
 POST    /api/v1/upload                             controllers.ApplicationController.upload
 
 POST    /api/v1/link                                controllers.ApplicationController.linkDagrs
+
+POST    /api/v1/renameDagr                          controllers.ApplicationController.renameDagr
 
 ########################################################################################################################
 # Deletion requests

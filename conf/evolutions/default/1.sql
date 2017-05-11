@@ -5,7 +5,7 @@
 
 create table annotation (
   id                            bigint auto_increment not null,
-  annotation_text               varchar(255),
+  annotation_text               longtext,
   creation_date                 datetime(6) not null,
   constraint pk_annotation primary key (id)
 );

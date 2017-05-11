@@ -1,0 +1,14 @@
+
+@main("Rename DAGR"){
+<div class="container">
+    <div class="well">
+        @helper.form(action = routes.ApplicationController.renameDagr(), 'class -> "form-horizontal") {
+        UUID:
+        <input type="text" name="uuid">
+        New Name:
+        <input type="text" name="name">
+        <button type="submit" name="search" id="search" class="btn btn-primary">Search</button>
+        }
+    </div>
+</div>
+}

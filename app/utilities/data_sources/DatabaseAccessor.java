@@ -121,7 +121,7 @@ public class DatabaseAccessor {
      *          An Optional containing the List of all DAGRs matching the given annotationText.
      * */
     @Transactional
-    public Optional<List<Dagr>> findDagrComponentsByAnnotation(String annotation) {
+    public Optional<List<Dagr>> findDagrsByAnnotation(String annotation) {
         Optional<List<Dagr>> result;
 
         List<Dagr> dagrList = Dagr.FIND.where()
@@ -153,6 +153,29 @@ public class DatabaseAccessor {
         }
 
         return result;
+    }
+
+    @Transactional
+    public Optional<Dagr> findDagrByName(String name) {
+        Optional<Dagr> result;
+        Dagr dagr = Dagr.FIND.where()
+                .like("name", "%" + name + "%")
+                .findUnique();
+
+        if(dagr == null) {
+            result = Optional.empty();
+        } else {
+            result = Optional.of(dagr);
+        }
+
+        return result;
+    }
+
+    @Transactional
+    public List<Dagr> findDagrsByContentType(String contentType) {
+        return Dagr.FIND.where()
+                .like("contentType", "%" + contentType + "%")
+                .findList();
     }
 
     /**
@@ -234,6 +257,16 @@ public class DatabaseAccessor {
         return result;
     }
 
+    @Transactional
+    public void renameDagr(UUID uuid, String name) {
+        Optional<Dagr> dagrOptional = this.findDagrByUuid(uuid);
+        if(dagrOptional.isPresent()) {
+            Dagr dagr = dagrOptional.get();
+            dagr.dagrName = name;
+            dagr.update();
+        }
+    }
+
     /**
      * Inserts the given DAGR to the database
      *
@@ -255,6 +288,11 @@ public class DatabaseAccessor {
     @Transactional
     private boolean containsUniqueUuid(UUID uuid) {
         return findDagrByUuid(uuid).isPresent();
+    }
+
+    @Transactional
+    public boolean containsDagrName(String dagrName) {
+        return findDagrByName(dagrName).isPresent();
     }
 
 }

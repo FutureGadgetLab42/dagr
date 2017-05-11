@@ -29,7 +29,7 @@ public class Annotation extends Model {
     public Date creationDate;
 
     @Required
-    @Constraints.MaxLength(128)
+    @Lob
     public String annotationText;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "annotations")

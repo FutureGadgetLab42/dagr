@@ -1,0 +1,12 @@
+
+@main("Author"){
+<div class="container">
+    <div class="well">
+        @helper.form(action = routes.ApplicationController.findDagrByAuthor(), 'class -> "form-horizontal") {
+        Author:
+        <input type="text" name="author">
+        <button type="submit" name="search" id="search" class="btn btn-primary">Search</button>
+        }
+    </div>
+</div>
+}

@@ -1,0 +1,12 @@
+
+@main("Name"){
+<div class="container">
+    <div class="well">
+        @helper.form(action = routes.ApplicationController.findDagrByName(), 'class -> "form-horizontal") {
+        Name:
+        <input type="text" name="name">
+        <button type="submit" name="search" id="search" class="btn btn-primary">Search</button>
+        }
+    </div>
+</div>
+}

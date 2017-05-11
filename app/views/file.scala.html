@@ -4,12 +4,19 @@
     <div class="well">
         @helper.form(action = routes.ApplicationController.upload, 'enctype -> "multipart/form-data") {
         DAGR Name:
-        <input type="text" name="name">
+        <input type="text" name="name" required>
         Author Name:
         <input type="text" name="author">
-        <input type="file" name="file">
-        <p> <input type="submit"> </p>
+        Path:
+        <input type="text" name="path">
+        <input type="file" name="file" required>
+        <p> <input type="submit" onclick="myFunction()"> </p>
         }
     </div>
+    <script>
+    function myFunction() {
+        alert("Successfully inserted DAGR");
+    }
+</script>
 </div>
 }

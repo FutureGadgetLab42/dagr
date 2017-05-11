@@ -47,6 +47,7 @@ public class Dagr extends Model {
     protected Dagr() {}
 
     public Dagr(DagrBuilder dagrBuilder) {
+        this.annotations = new HashSet<>();
         this.creationDate = dagrBuilder.getDagrCreationDate();
         this.documentCreationDate = dagrBuilder.getDocumentCreationTime();
         this.dagrUuid = dagrBuilder.getDagrUuid();

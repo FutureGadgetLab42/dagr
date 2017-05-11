@@ -51,6 +51,10 @@ public class ApplicationController extends Controller {
         return ok(views.html.file.render());
     }
 
+    public Result batchInsertPage() {
+        return ok(views.html.batchupload.render());
+    }
+
     public Result linkPage() {
         Form<LinkDagrRequest> requestForm = FORM_FACTORY.form(LinkDagrRequest.class);
         return ok(views.html.link.render(requestForm));
@@ -70,6 +74,18 @@ public class ApplicationController extends Controller {
         return ok(views.html.date.render(requestFrom));
     }
 
+    public Result findByNamePage() {
+        return ok(views.html.name.render());
+    }
+
+    public Result findByAuthorPage() {
+        return ok(views.html.author.render());
+    }
+
+    public Result findByTypePage() {
+        return ok(views.html.contenttype.render());
+    }
+
     public Result reachQueryPage() {
         return ok(views.html.reach.render());
     }
@@ -78,9 +94,31 @@ public class ApplicationController extends Controller {
         return ok(views.html.annotation.render());
     }
 
+    public Result dagrDisplay(List<Dagr> dagrs) {
+        return ok(views.html.dagrdisplay.render(dagrs));
+    }
+
+    public Result renameDagrPage() {
+        return ok(views.html.rename.render());
+    }
+
     /**************************************************************************************************
      * Query Requests
      **************************************************************************************************/
+
+    @Transactional
+    public Result findDagrByName() {
+        Result response;
+        String dagrName = request().body().asFormUrlEncoded().get("name")[0];
+        List<Dagr> resultList = new ArrayList<>();
+        Optional<Dagr> resultDagr = DATABASE_ACCESSOR.findDagrByName(dagrName);
+
+        if(resultDagr.isPresent()) {
+            resultList = Collections.singletonList(resultDagr.get());
+        }
+
+        return dagrDisplay(resultList);
+    }
 
     /**
      * Find DAGR by UUID.
@@ -94,9 +132,9 @@ public class ApplicationController extends Controller {
             Optional<Dagr> dagrOptional = DATABASE_ACCESSOR.findDagrByUuid(dagrUuid);
 
             if(dagrOptional.isPresent()) {
-                response = ok(views.html.dagrdisplay.render(Collections.singletonList(dagrOptional.get())));
+                response = dagrDisplay(Collections.singletonList(dagrOptional.get()));
             } else {
-                response = ok(views.html.dagrdisplay.render(new ArrayList<>()));
+                response = dagrDisplay(new ArrayList<>());
             }
         } catch(IllegalArgumentException e) {
             response = badRequest("Invalid request body.");
@@ -117,9 +155,9 @@ public class ApplicationController extends Controller {
                     .findDagrsByDate(findDagrByDateRequest.getStartDate(), findDagrByDateRequest.getEndDate());
 
             if(dagrListOptional.isPresent()) {
-                response = ok(views.html.dagrdisplay.render(dagrListOptional.get()));
+                response = dagrDisplay(dagrListOptional.get());
             } else {
-                response = ok(views.html.dagrdisplay.render(new ArrayList<>()));
+                response = dagrDisplay(new ArrayList<>());
             }
 
         } catch(FindDagrByDateException e) {
@@ -130,23 +168,23 @@ public class ApplicationController extends Controller {
     }
 
     @Transactional
-    public Result findDagrByAuthor(String author) {
+    public Result findDagrByAuthor() {
         Result response;
-
+        String author = request().body().asFormUrlEncoded().get("author")[0];
         Optional<List<Dagr>> dagrListOptional = DATABASE_ACCESSOR.findDagrsByAuthor(author);
         if(dagrListOptional.isPresent()) {
-            response = ok(Json.toJson(dagrListOptional.get()));
+            response = dagrDisplay(dagrListOptional.get());
         } else {
-            response = ok("DAGRs with author " + author + " not present");
+            response = dagrDisplay(new ArrayList<>());
         }
 
         return response;
     }
 
-    //TODO this method!
     @Transactional
-    public Result findDagrtByFileType(String fileType) {
-        throw new RuntimeException("Not implemented");
+    public Result findDagrByContentType() {
+        String fileType = request().body().asFormUrlEncoded().get("contentType")[0];
+        return dagrDisplay(DATABASE_ACCESSOR.findDagrsByContentType(fileType));
     }
 
     @Transactional
@@ -275,16 +313,36 @@ public class ApplicationController extends Controller {
         Http.MultipartFormData.FilePart<File> mfdFile = requestBody.getFile("file");
         try {
             Map<String, String[]> formUrlEncoded = requestBody.asFormUrlEncoded();
-            String dagrName = formUrlEncoded.get("name")[0], author = formUrlEncoded.get("author")[0];
-            CreateDagrRequest createDagrRequest = REQUEST_VALIDATOR.validateCreateDagrRequest(mfdFile, dagrName, author);
+            String dagrName = formUrlEncoded.get("name")[0], author = formUrlEncoded.get("author")[0],
+                    path = formUrlEncoded.get("path")[0];
+            CreateDagrRequest createDagrRequest = REQUEST_VALIDATOR.validateCreateDagrRequest(mfdFile, dagrName, author, path);
             Dagr resultingDagr = FACTORIES.dagrFactory.buildDagr(createDagrRequest);
             DATABASE_ACCESSOR.saveDagr(resultingDagr);
-            response = this.insertFilePage();
+            response = dagrDisplay(Collections.singletonList(resultingDagr));
         } catch(CreateComponentException e) {
             flash("error", "Missing file");
             response = badRequest("Missing File");
         }
         return response;
+    }
+
+    @Transactional
+    public Result batchUpload() {
+        Result response;
+        Http.MultipartFormData<File> requestBody = request().body().asMultipartFormData();
+        List<Http.MultipartFormData.FilePart<File>> filePartList = requestBody.getFiles();
+        List<Dagr> responseList = new ArrayList<>();
+        filePartList.forEach(fp -> {
+            try {
+                CreateDagrRequest createDagrRequest = REQUEST_VALIDATOR.validateCreateDagrRequest(fp);
+                Dagr resultingDagr = FACTORIES.dagrFactory.buildDagr(createDagrRequest);
+                DATABASE_ACCESSOR.saveDagr(resultingDagr);
+                responseList.add(resultingDagr);
+            } catch (CreateComponentException e) {
+                Logger.warn("Invalid file: " + fp);
+            }
+        });
+        return dagrDisplay(responseList);
     }
 
     @Transactional
@@ -312,6 +370,24 @@ public class ApplicationController extends Controller {
             response = badRequest("Invalid request");
         }
 
+        return response;
+    }
+
+    @Transactional
+    public Result renameDagr() {
+        Result response;
+        Map<String, String[]> requestBody = request().body().asFormUrlEncoded();
+        UUID uuid = UUID.fromString(requestBody.get("uuid")[0]);
+        String name = requestBody.get("name")[0];
+        Optional<Dagr> toRenameOptional = DATABASE_ACCESSOR.findDagrByUuid(uuid);
+        if(toRenameOptional.isPresent()) {
+            Dagr toRename = toRenameOptional.get();
+            toRename.dagrName = name;
+            toRename.update();
+            response = dagrDisplay(Collections.singletonList(toRename));
+        } else {
+            response = renameDagrPage();
+        }
         return response;
     }
 

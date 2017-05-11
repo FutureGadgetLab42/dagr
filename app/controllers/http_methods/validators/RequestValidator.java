@@ -40,14 +40,18 @@ public class RequestValidator {
         }
     }
 
-    public CreateDagrRequest validateCreateDagrRequest(Http.MultipartFormData.FilePart<File> filePart, String name, String author) {
+    public CreateDagrRequest validateCreateDagrRequest(Http.MultipartFormData.FilePart<File> filePart) {
+        return validateCreateDagrRequest(filePart, "", "", "");
+    }
+
+    public CreateDagrRequest validateCreateDagrRequest(Http.MultipartFormData.FilePart<File> filePart, String name, String author, String path) {
         if(filePart != null) {
             CreateDagrRequest result = new CreateDagrRequest();
             File file = filePart.getFile();
             result.setDagrName(name);
             result.setDocumentName(filePart.getFilename());
             result.setContentType(filePart.getContentType());
-            result.setResourceLocation(file.getAbsolutePath());
+            result.setResourceLocation(path);
             result.setDocumentCreationTime(new Date(file.lastModified()));
             result.setLastModified(result.getDocumentCreationTime());
             result.setFileSize(file.getTotalSpace());
