@@ -60,10 +60,18 @@ public class Dagr extends Model {
     }
 
     public void addAnnotation(Annotation annotationToAdd) {
-        this.annotations.add(annotationToAdd);
+        this.getAnnotations().add(annotationToAdd);
     }
 
     public void addAdjacentDagr(Dagr adjacentDagr) {
-        this.childDagrs.add(adjacentDagr);
+        this.getChildDagrs().add(adjacentDagr);
+    }
+
+    public Set<Annotation> getAnnotations() {
+        return annotations;
+    }
+
+    public Set<Dagr> getChildDagrs() {
+        return childDagrs;
     }
 }

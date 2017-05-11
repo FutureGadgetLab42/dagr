@@ -24,6 +24,7 @@ import utilities.exceptions.FindDagrByDateException;
 import javax.inject.Inject;
 import java.io.File;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ApplicationController extends Controller {
 
@@ -93,9 +94,9 @@ public class ApplicationController extends Controller {
             Optional<Dagr> dagrOptional = DATABASE_ACCESSOR.findDagrByUuid(dagrUuid);
 
             if(dagrOptional.isPresent()) {
-                response = ok(Json.toJson(dagrOptional.get()));
+                response = ok(views.html.dagrdisplay.render(Collections.singletonList(dagrOptional.get())));
             } else {
-                response = ok("DAGR not present: " + dagrUuid);
+                response = ok(views.html.dagrdisplay.render(new ArrayList<>()));
             }
         } catch(IllegalArgumentException e) {
             response = badRequest("Invalid request body.");
@@ -116,10 +117,9 @@ public class ApplicationController extends Controller {
                     .findDagrsByDate(findDagrByDateRequest.getStartDate(), findDagrByDateRequest.getEndDate());
 
             if(dagrListOptional.isPresent()) {
-                response = ok(Json.toJson(dagrListOptional.get()));
+                response = ok(views.html.dagrdisplay.render(dagrListOptional.get()));
             } else {
-                response = ok("DAGRs between " + findDagrByDateRequest.getStartDate() + " to " +
-                        findDagrByDateRequest.getEndDate() + " not present.");
+                response = ok(views.html.dagrdisplay.render(new ArrayList<>()));
             }
 
         } catch(FindDagrByDateException e) {
@@ -155,16 +155,14 @@ public class ApplicationController extends Controller {
         Set<Dagr> allDagrSet = new HashSet<>();
         allDagrs.forEach(d -> allDagrSet.add(d));
         allDagrs.forEach(d -> {
-            d.childDagrs.forEach(c -> {
-                allDagrSet.remove(c);
-            });
+            d.childDagrs.forEach(allDagrSet::remove);
         });
-        return ok(Json.toJson(allDagrSet));
+        return ok(views.html.dagrdisplay.render(new ArrayList<>(allDagrSet)));
     }
 
     @Transactional
     public Result sterileReport() {
-        return ok(Json.toJson(DATABASE_ACCESSOR.listAllDagrs().stream().filter(d -> d.childDagrs.size() == 0).toArray()));
+        return ok(views.html.dagrdisplay.render(DATABASE_ACCESSOR.listAllDagrs().stream().filter(d -> d.childDagrs.size() == 0).collect(Collectors.toList())));
     }
 
     @Transactional
@@ -176,7 +174,7 @@ public class ApplicationController extends Controller {
             UUID uuid = UUID.fromString(requestBody.get("uuid")[0]);
             Optional<Dagr> dagrOptional = DATABASE_ACCESSOR.findDagrByUuid(uuid);
             if(dagrOptional.isPresent()) {
-                response = ok(Json.toJson(dagrBfs(dagrOptional.get())));
+                response = ok(views.html.dagrdisplay.render(dagrBfs(dagrOptional.get())));
             } else {
                 response = badRequest("UUID not present: " + uuid);
             }
@@ -189,8 +187,8 @@ public class ApplicationController extends Controller {
     }
 
     @Transactional
-    private Set<Dagr> dagrBfs(Dagr startDagr) {
-        Set<Dagr> result = new HashSet<>();
+    private List<Dagr> dagrBfs(Dagr startDagr) {
+        List<Dagr> result = new ArrayList<>();
         PriorityQueue<Dagr> queue = new PriorityQueue<>();
         queue.add(startDagr);
 
@@ -247,8 +245,8 @@ public class ApplicationController extends Controller {
                     Annotation annotation = FACTORIES.annotationFactory.buildAnnotation(requestBody, dagr);
                     DATABASE_ACCESSOR.saveAnnotation(annotation);
                     dagr.addAnnotation(annotation);
-                    DATABASE_ACCESSOR.saveDagr(dagr);
-                    response = ok(Json.toJson(annotation));
+                    dagr.update();
+                    response = this.createAnnotationPage();
                 } else {
                     Logger.info("Failed to find component with UUID: " + uuid);
                     response = ok("Component not found: " + uuid);
@@ -281,7 +279,7 @@ public class ApplicationController extends Controller {
             CreateDagrRequest createDagrRequest = REQUEST_VALIDATOR.validateCreateDagrRequest(mfdFile, dagrName, author);
             Dagr resultingDagr = FACTORIES.dagrFactory.buildDagr(createDagrRequest);
             DATABASE_ACCESSOR.saveDagr(resultingDagr);
-            response = ok(Json.toJson(resultingDagr));
+            response = this.insertFilePage();
         } catch(CreateComponentException e) {
             flash("error", "Missing file");
             response = badRequest("Missing File");
@@ -299,15 +297,18 @@ public class ApplicationController extends Controller {
             Optional<Dagr> parentDagrOptional = DATABASE_ACCESSOR.findDagrByUuid(parentUuid);
             Optional<Dagr> childDagrOptional = DATABASE_ACCESSOR.findDagrByUuid(childUuid);
             if(parentDagrOptional.isPresent() && childDagrOptional.isPresent()) {
-                Dagr parentDagr = parentDagrOptional.get();
-                parentDagr.addAdjacentDagr(childDagrOptional.get());
-                DATABASE_ACCESSOR.saveDagr(parentDagr);
-                response = ok("Parent: " + parentUuid + " child: " + childUuid);
+                Dagr parentDagr = parentDagrOptional.get(), childDagr = childDagrOptional.get();
+                if(parentDagr.childDagrs.stream().noneMatch(cd -> cd.dagrUuid == childDagr.dagrUuid)
+                        && childDagr.childDagrs.stream().noneMatch(cd -> cd.dagrUuid == childDagr.dagrUuid)) {
+                    parentDagr.addAdjacentDagr(childDagrOptional.get());
+                    parentDagr.update();
+                }
+                response = this.linkPage();
             } else {
                 response = badRequest("UUID not present");
             }
         } catch (IllegalArgumentException e) {
-            Logger.warn("Invalid rqeuest to link DAGRs " + requestBody);
+            Logger.warn("Invalid request to link DAGRs " + requestBody);
             response = badRequest("Invalid request");
         }
 

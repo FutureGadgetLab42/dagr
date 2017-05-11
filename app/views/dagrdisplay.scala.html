@@ -2,8 +2,25 @@
 
 @main("DAGR Display Page") {
     @for(dagr <- dagrList) {
-        <div>
-            DAGR UUID
+        <div class="container">
+            <div class="col-lg-8 col-lg-offset-2">
+
+                DAGR Name: @dagr.dagrName<br>
+                Author: @dagr.author<br>
+                Document Name: @dagr.documentName;<br>
+                Content Type: @dagr.contentType;<br>
+                Resource Location: @dagr.resourceLocation;<br>
+                File Size (in bytes): @dagr.fileSize;<br>
+                DAGR UUID: @dagr.dagrUuid<br>
+                DAGR Creation Date: @dagr.creationDate<br>
+                Document Creation Date: @dagr.documentCreationDate<br>
+                Last Modified Date: @dagr.lastModified<br>
+                Annotations:
+                @for(anno <- dagr.annotations) {
+                    annotationText,
+                }
+                <br><br>
+            </div>
         </div>
     }
 }
