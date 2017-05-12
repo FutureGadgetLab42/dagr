@@ -39,6 +39,7 @@ GET     /assets/*file                              controllers.Assets.versioned(
 
 GET     /listAll                                    controllers.ApplicationController.listAll
 
+GET     /parseHtmlPage                              controllers.ApplicationController.parseHtmlPage
 
 ########################################################################################################################
 # Query requests
@@ -78,6 +79,8 @@ POST    /api/v1/upload                             controllers.ApplicationContro
 POST    /api/v1/link                                controllers.ApplicationController.linkDagrs
 
 POST    /api/v1/renameDagr                          controllers.ApplicationController.renameDagr
+
+POST    /api/v1/parseHtml                           controllers.ApplicationController.parseHtml
 
 ########################################################################################################################
 # Deletion requests

@@ -16,6 +16,8 @@ import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
 import utilities.data_sources.DatabaseAccessor;
+import utilities.data_sources.parser.HtmlParser;
+import utilities.data_sources.parser.ParsedHtmlData;
 import utilities.exceptions.AnnotationCreationException;
 import utilities.exceptions.CreateComponentException;
 import utilities.exceptions.DeleteAnnotationException;
@@ -23,6 +25,8 @@ import utilities.exceptions.FindDagrByDateException;
 
 import javax.inject.Inject;
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -31,6 +35,7 @@ public class ApplicationController extends Controller {
     private static final FactoryWrapper FACTORIES = new FactoryWrapper();
     private static final DatabaseAccessor DATABASE_ACCESSOR = new DatabaseAccessor();
     private static final RequestValidator REQUEST_VALIDATOR = new RequestValidator();
+    private static final HtmlParser HTML_PARSER = new HtmlParser();
 
     @Inject
     private FormFactory FORM_FACTORY;
@@ -104,6 +109,10 @@ public class ApplicationController extends Controller {
 
     public Result renameDagrPage() {
         return ok(views.html.rename.render());
+    }
+
+    public Result parseHtmlPage() {
+        return ok(views.html.parse.render());
     }
 
     /**************************************************************************************************
@@ -400,6 +409,23 @@ public class ApplicationController extends Controller {
             response = dagrDisplay(Collections.singletonList(toRename));
         } else {
             response = renameDagrPage();
+        }
+        return response;
+    }
+
+    @Transactional
+    public Result parseHtml() {
+        Result response;
+        Map<String, String[]> requestBody = request().body().asFormUrlEncoded();
+        try {
+            String resourceUrl = requestBody.get("resourceUrl")[0];
+            List<ParsedHtmlData> parsedData = HTML_PARSER.traverseDocument(resourceUrl);
+            List<Dagr> resultingDagrs = FACTORIES.dagrFactory.fromParsedData(parsedData);
+            resultingDagrs.forEach(d -> DATABASE_ACCESSOR.saveDagr(d));
+            response = dagrDisplay(resultingDagrs);
+        } catch (Exception e) {
+            Logger.warn("Attempted to parse HTML at invalid URL: " + requestBody.get("resourceUrl")[0]);
+            response = badRequest("Invalid request");
         }
         return response;
     }

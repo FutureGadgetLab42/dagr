@@ -1,10 +1,13 @@
 package models.dagr.factories;
 
 import controllers.http_methods.requests.CreateDagrRequest;
+import utilities.data_sources.parser.ParsedHtmlData;
 import utilities.exceptions.DagrCreationException;
 import models.dagr.Dagr;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -29,6 +32,18 @@ public class DagrFactory {
         dagrBuilder.setFileSize(request.getFileSize());
         dagrBuilder.setAuthor(request.getAuthor());
         return dagrBuilder.build();
+    }
+
+    public List<Dagr> fromParsedData(List<ParsedHtmlData> parsedData) {
+        List<Dagr> result = new ArrayList<>();
+        for(ParsedHtmlData data : parsedData) {
+            CreateDagrRequest createDagrRequest = new CreateDagrRequest();
+            createDagrRequest.setContentType(data.getContentType());
+            createDagrRequest.setFileSize(data.getSize());
+            createDagrRequest.setResourceLocation(data.getResourceLocation());
+            result.add(buildDagr(createDagrRequest));
+        }
+        return result;
     }
 
 }

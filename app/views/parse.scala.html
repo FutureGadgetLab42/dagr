@@ -1,0 +1,12 @@
+
+@main("HTML Parser") {
+<div class="container">
+    <div class="well">
+        @helper.form(action = routes.ApplicationController.parseHtml, 'class -> "form-horizontal") {
+        Resource URL:
+        <input type="text" name="resourceUrl">
+        <p> <input type="submit"> </p>
+        }
+    </div>
+</div>
+}

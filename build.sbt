@@ -14,7 +14,8 @@ libraryDependencies ++= Seq(
   javaWs,
   evolutions,
   "org.webjars" %% "webjars-play" % "2.5.0",
-  "org.webjars" % "bootstrap" % "3.1.1-2"
+  "org.webjars" % "bootstrap" % "3.1.1-2",
+  "org.jsoup" % "jsoup" % "1.10.2"
 )
 
 
