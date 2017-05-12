@@ -91,6 +91,10 @@ public class ApplicationController extends Controller {
         return ok(views.html.contenttype.render());
     }
 
+    public Result findByAnnotationPage() {
+        return ok(views.html.findannotation.render());
+    }
+
     public Result reachQueryPage() {
         return ok(views.html.reach.render());
     }
@@ -202,7 +206,8 @@ public class ApplicationController extends Controller {
 
     @Transactional
     public Result findDagrByAnnotation() {
-        return ok("ok");
+        String annotation = request().body().asFormUrlEncoded().get("annotation")[0];
+        return dagrDisplay(DATABASE_ACCESSOR.findDagrsByAnnotation(annotation));
     }
 
     @Transactional

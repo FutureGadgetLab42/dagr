@@ -1,7 +1,3 @@
-# --- Created by Ebean DDL
-# To stop Ebean DDL generation, remove this comment and start using Evolutions
-
-# --- !Ups
 
 create table annotation (
   id                            bigint auto_increment not null,

@@ -7,6 +7,7 @@ import play.db.ebean.Transactional;
 
 import javax.persistence.NonUniqueResultException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class DatabaseAccessor {
 
@@ -121,21 +122,12 @@ public class DatabaseAccessor {
      *          An Optional containing the List of all DAGRs matching the given annotationText.
      * */
     @Transactional
-    public Optional<List<Dagr>> findDagrsByAnnotation(String annotation) {
-        Optional<List<Dagr>> result;
+    public List<Dagr> findDagrsByAnnotation(String annotation) {
+        List<Dagr> allDagrs = Dagr.FIND.all();
 
-        List<Dagr> dagrList = Dagr.FIND.where()
-                .like("annotation", "%" + annotation + "%")
-                .findList();
-
-        if(dagrList == null) {
-            Logger.warn("Couldn't find DAGRs with annotation: " + annotation);
-            result = Optional.empty();
-        } else {
-            result = Optional.of(dagrList);
-        }
-
-        return result;
+        return allDagrs.stream()
+                .filter(d -> d.annotations.stream().anyMatch(a -> a.annotationText.equals(annotation)))
+                .collect(Collectors.toList());
     }
 
     @Transactional

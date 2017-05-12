@@ -31,6 +31,8 @@ GET     /findByAuthorPage                           controllers.ApplicationContr
 
 GET     /findByTypePage                             controllers.ApplicationController.findByTypePage
 
+GET     /findByAnnotationPage                       controllers.ApplicationController.findByAnnotationPage
+
 GET     /reachQueryPage                             controllers.ApplicationController.reachQueryPage
 
 GET     /renamePage                             controllers.ApplicationController.renamePage
