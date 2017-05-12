@@ -90,6 +90,10 @@ public class ApplicationController extends Controller {
         return ok(views.html.reach.render());
     }
 
+    public Result renamePage() {
+        return ok(views.html.rename.render());
+    }
+
     public Result createAnnotationPage() {
         return ok(views.html.annotation.render());
     }
